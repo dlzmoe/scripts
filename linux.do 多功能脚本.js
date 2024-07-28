@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linux.do 多功能脚本
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.4
+// @version      0.0.5
 // @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
@@ -26,6 +26,7 @@
     ['menu_viewstotime', '将浏览量替换为创建时间', '将浏览量替换为创建时间', true],
     ['menu_showfloors', '显示楼层数', '显示楼层数', true],
     ['menu_hidereplytail', '隐藏跟帖小尾巴签名', '隐藏跟帖小尾巴签名', false],
+    ['menu_showchattime', '显示聊天频道时间', '显示聊天频道时间', false],
   ];
   var menu_ID = [];
   for (let i = 0; i < menu_ALL.length; i++) { // 如果读取到的值为 null 就写入默认值
@@ -248,5 +249,16 @@
 
   }
   menu_showfloors();
+
+  
+  // 显示聊天频道时间
+  function menu_showchattime(){
+    if (!menu_value('menu_showchattime')) return;
+    $('head').append(`<style>
+      .chat-message-container.-user-info-hidden .chat-time{display:block!important;}
+  
+      </style>`)
+  }
+  menu_showchattime();
 
 })();
