@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         linux.do 多功能脚本
+// @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.5
-// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，功能持续更新，欢迎提出。
+// @version      0.0.7
+// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，显示等级，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
 // @grant        GM_xmlhttpRequest
@@ -14,7 +14,6 @@
 // @grant        GM_notification
 // @grant        GM_info
 // @icon         https://cdn.linux.do/uploads/default/optimized/3X/9/d/9dd49731091ce8656e94433a26a3ef36062b3994_2_32x32.png
-// @grant        none
 // @license      MIT
 // ==/UserScript==
 
@@ -92,7 +91,6 @@
     }
   }
 
-
   function formattedDate(time) {
     const timestamp = Number(time); // 将字符串转换为数字类型
     const date = new Date(timestamp);
@@ -162,10 +160,6 @@
 
           if (menu_value('menu_viewstotime')) {
             $(this).siblings('.views').html('未知');
-            $('head').append(`<style>
-              .topic-list .views .number{opacity:0!important}
-              .topic-list .views{font-weight:400!important;white-space:nowrap!important;}
-              </style>`)
             $('.topic-list th.views span').html('创建时间');
             if (timeDiff < oneDay) {
               color = '#45B5AA';
@@ -219,46 +213,58 @@
       init();
     }, 1000);
   }
-  menu_showcreatetime();
-
 
   // 隐藏跟帖小尾巴签名
   function menu_hidereplytail() {
     if (!menu_value('menu_hidereplytail')) return;
-    $('head').append('<style>.topic-post .signature-img{display:none !important}</style>')
+    $('head').append('<style>.topic-post .signature-img{display:none !important}</style>');
   }
   menu_hidereplytail();
-
 
   // 显示楼层数
   function menu_showfloors() {
     if (!menu_value('menu_showfloors')) return;
-    $('head').append(`<style>
-    .topic-post{position:relative;}
-    .linuxfloor{display:flex;position:absolute;left:-32px;top:25px;color:#96aed0;width:30px;height:30px;align-items:center;justify-content:center;border-radius:6px;font-size:18px}
-
-      </style>`)
     setInterval(() => {
       $('.topic-post').each(function () {
         const num = $(this).find('article').attr('id').replace(/^post_/, '');
         if ($(this).find('.linuxfloor').length < 1) {
-          $(this).find('.topic-avatar').append(`<span class="linuxfloor">${num}</span>`)
+          $(this).find('.topic-avatar').append(`<span class="linuxfloor">#${num}</span>`)
         }
       })
     }, 1000);
-
   }
-  menu_showfloors();
 
-  
   // 显示聊天频道时间
-  function menu_showchattime(){
+  function menu_showchattime() {
     if (!menu_value('menu_showchattime')) return;
     $('head').append(`<style>
       .chat-message-container.-user-info-hidden .chat-time{display:block!important;}
-  
       </style>`)
   }
   menu_showchattime();
+
+
+  $(function () {
+    $('head').append(`<style>
+.linuxlevel.four{background:linear-gradient(to right, red, blue);-webkit-background-clip:text;color:transparent;}
+
+.topic-post{position:relative;}
+.linuxfloor{display:flex;position:absolute;left:-28px;top:0px;color:#96aed0;width:30px;height:30px;align-items:center;justify-content:center;border-radius:6px;font-size:16px}
+
+.topic-list .views .number{opacity:0!important}
+.topic-list .views{font-weight:400!important;white-space:nowrap!important;}
+        </style>`)
+
+    let pollinglength = 0;
+    setInterval(() => {
+      if (pollinglength != $('.topic-list-body tr').length) {
+        pollinglength = $('.topic-list-body tr').length
+        // 需要轮询的方法
+        menu_showcreatetime(); // 显示创建时间
+        menu_showfloors(); // 显示楼层数
+      }
+    }, 1000);
+
+  })
 
 })();
