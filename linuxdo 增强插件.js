@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.8
-// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，显示等级，功能持续更新，欢迎提出。
+// @version      0.0.12
+// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
 // @grant        GM_xmlhttpRequest
@@ -21,12 +21,14 @@
   'use strict';
 
   var menu_ALL = [
-    ['menu_showcreatetime', '帖子列表显示创建时间', '帖子列表显示创建时间', true],
-    ['menu_viewstotime', '将浏览量替换为创建时间', '将浏览量替换为创建时间', true],
+    ['menu_openpostblank', '新标签页打开话题', '新标签页打开话题', false],
+    ['menu_showcreatetime', '话题列表显示创建时间', '话题列表显示创建时间', true],
+    ['menu_viewstotime', '将浏览量替换为创建时间', '将浏览量替换为创建时间', false],
     ['menu_showfloors', '显示楼层数', '显示楼层数', true],
     ['menu_hidereplytail', '隐藏跟帖小尾巴签名', '隐藏跟帖小尾巴签名', false],
     ['menu_showchattime', '显示聊天频道时间', '显示聊天频道时间', false],
     ['menu_logonews', '点击logo查看最新话题', '点击logo查看最新话题', false],
+    ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', false],
   ];
   var menu_ID = [];
   for (let i = 0; i < menu_ALL.length; i++) { // 如果读取到的值为 null 就写入默认值
@@ -45,9 +47,14 @@
     }
     for (let i = 0; i < menu_ALL.length; i++) { // 循环注册脚本菜单
       menu_ALL[i][3] = GM_getValue(menu_ALL[i][0]);
-      menu_ID[i] = GM_registerMenuCommand(`${menu_ALL[i][3]?'✅':'❌'} ${menu_ALL[i][1]}`, function () {
-        menu_switch(`${menu_ALL[i][3]}`, `${menu_ALL[i][0]}`, `${menu_ALL[i][2]}`)
-      });
+      if (menu_ALL[i][0] === 'menu_customBlockKeywords') { // 只有 [屏蔽指定关键词] 启用时，才注册菜单 [自定义屏蔽关键词]
+        customBlockKeywords()
+      } else {
+        menu_ID[i] = GM_registerMenuCommand(`${menu_ALL[i][3]?'✅':'❌'} ${menu_ALL[i][1]}`, function () {
+          menu_switch(`${menu_ALL[i][3]}`, `${menu_ALL[i][0]}`, `${menu_ALL[i][2]}`)
+        });
+      }
+
     }
     menu_ID[menu_ID.length] = GM_registerMenuCommand('💬 修改设置后记得刷新网页！', function () {
       window.GM_openInTab(window.location.href, {
@@ -253,6 +260,84 @@
   }
   menu_logonews();
 
+  // 新标签页打开话题
+  function menu_openpostblank() {
+    if (!menu_value('menu_openpostblank')) return;
+    $('.topic-list a.title').click(function (event) {
+      event.preventDefault();
+      var url = $(this).attr('href');
+      window.open(url, '_blank');
+    });
+  }
+
+  // 显示功能悬浮球
+  function menu_suspendedball() {
+    if (!menu_value('menu_suspendedball')) return;
+    setTimeout(() => {
+      $('body').append(`<div class="menu_suspendedball">
+  <div class="btn"><svg class="fa d-icon d-icon-cog svg-icon svg-string" xmlns="http://www.w3.org/2000/svg">
+      <use href="#cog"></use>
+    </svg></div>
+  <div id="menu_suspendedball">
+    <div class="title">设置</div><div class="close">+</div>
+    <p class="hint">请注意，该设置面板数据都保存在浏览器缓存中，注意备份。<br>暂不支持导入导出，后期会有该项功能的开发计划。</p>
+    <div class="item">
+      <div class="tit">1. 屏蔽用户列表（使用英文,分隔）</div>
+      <textarea id="blockuserlist" placeholder="user1,user2,user3"></textarea>
+    </div>
+    <button class="save">保存</button>
+  </div>
+</div>`);
+
+      $('.menu_suspendedball>.btn').click(function () {
+        $('#menu_suspendedball').show();
+      })
+
+      $('.menu_suspendedball .close').click(function () {
+        $('#menu_suspendedball').hide();
+      })
+      // 初始化
+      function init() {
+        var linuxdo_blockuserlist = localStorage.getItem('linuxdo_blockuserlist');
+        if (linuxdo_blockuserlist) {
+          $('#blockuserlist').val(linuxdo_blockuserlist)
+        }
+      }
+      init();
+
+      // 屏蔽用户
+      function setBlockUser() {
+        var blockuserlist = $('#blockuserlist').val();
+        localStorage.setItem('linuxdo_blockuserlist', blockuserlist);
+      }
+
+      $('#menu_suspendedball .save').click(function () {
+        setBlockUser();
+        $('#menu_suspendedball').hide();
+        alert('设置保存成功，请刷新网页！');
+      })
+
+    }, 1000);
+  };
+  menu_suspendedball();
+
+  // 运行脚本，默认执行
+  function runscript() {
+    // 屏蔽指定用户
+    var linuxdo_blockuserlist = localStorage.getItem('linuxdo_blockuserlist').split(',') || [];
+    console.log(linuxdo_blockuserlist);
+    $('.topic-list .topic-list-data.posters>a:nth-child(1)').each(function () {
+      var user = $(this).attr('data-user-card')
+
+      if (linuxdo_blockuserlist.indexOf(user) !== -1) {
+        console.log(user, 'block')
+        $(this).parents('tr.topic-list-item').remove();
+      } else {
+        console.log(user);
+      }
+    })
+  }
+
 
   $(function () {
     $('head').append(`<style>
@@ -261,8 +346,22 @@
 .topic-post{position:relative;}
 .linuxfloor{display:flex;position:absolute;left:-28px;top:0px;color:#96aed0;width:30px;height:30px;align-items:center;justify-content:center;border-radius:6px;font-size:16px}
 
-.topic-list .views .number{opacity:0!important}
 .topic-list .views{font-weight:400!important;white-space:nowrap!important;}
+
+.menu_suspendedball *{box-sizing:border-box;margin:0;padding:0}
+.menu_suspendedball .close{position:absolute;right:10px;top:3px;cursor:pointer;font-size:34px;color:#999;transform:rotate(45deg)}
+.menu_suspendedball>.btn{z-index:99;position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d1f0ff;color:#999;font-size:22px;cursor:pointer}
+.menu_suspendedball>.btn svg{margin:0}
+.menu_suspendedball .hint{margin-top:5px;color:#d94f4f;font-size:14px}
+#menu_suspendedball{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:600px;height:400px;overflow-y:auto;background:#fff;color:#333;box-shadow:1px 2px 5px rgba(0,0,0,.2);border-radius:10px;padding:15px;z-index:999;overflow-x:hidden;}
+#menu_suspendedball .title{font-size:18px;text-align:center;font-weight:600}
+#menu_suspendedball .save{border:none;outline:0;min-width:80px;height:35px;display:inline-flex;align-items:center;justify-content:center;background:#1c1c1e;color:#fff;font-size:15px;border-radius:5px;cursor:pointer;transition:all .1s linear}
+#menu_suspendedball .save:hover{background:#333}
+#menu_suspendedball .item{margin-top:10px}
+#menu_suspendedball .item .tit{text-align:left;font-size:15px;margin-bottom:6px}
+#menu_suspendedball .item textarea{font-family:inherit;width:100%;min-height:100px;border-radius:5px;border:1px solid #999;outline:0;padding:5px;font-size:14px;transition:all .1s linear;resize:none}
+#menu_suspendedball .item textarea:focus{border-color:#333}
+
         </style>`)
 
     let pollinglength = 0;
@@ -272,6 +371,8 @@
         // 需要轮询的方法
         menu_showcreatetime(); // 显示创建时间
         menu_showfloors(); // 显示楼层数
+        menu_openpostblank(); // 新标签页打开话题
+        runscript(); // 运行默认脚本
       }
     }, 1000);
 
