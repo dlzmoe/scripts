@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.12
+// @version      0.0.15
 // @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
@@ -27,8 +27,9 @@
     ['menu_showfloors', '显示楼层数', '显示楼层数', true],
     ['menu_hidereplytail', '隐藏跟帖小尾巴签名', '隐藏跟帖小尾巴签名', false],
     ['menu_showchattime', '显示聊天频道时间', '显示聊天频道时间', false],
-    ['menu_logonews', '点击logo查看最新话题', '点击logo查看最新话题', false],
-    ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', false],
+    ['menu_createreply', '快捷创建回复', '快捷创建回复', true],
+    ['menu_blockuserlist', '屏蔽指定用户', '屏蔽指定用户', true],
+    ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', true],
   ];
   var menu_ID = [];
   for (let i = 0; i < menu_ALL.length; i++) { // 如果读取到的值为 null 就写入默认值
@@ -251,15 +252,6 @@
   }
   menu_showchattime();
 
-  // 点击logo查看最新帖子
-  function menu_logonews() {
-    if (!menu_value('menu_showchattime')) return;
-    setTimeout(() => {
-      $('#ember92 a').attr('href', '/new');
-    }, 1000);
-  }
-  menu_logonews();
-
   // 新标签页打开话题
   function menu_openpostblank() {
     if (!menu_value('menu_openpostblank')) return;
@@ -285,6 +277,11 @@
       <div class="tit">1. 屏蔽用户列表（使用英文,分隔）</div>
       <textarea id="blockuserlist" placeholder="user1,user2,user3"></textarea>
     </div>
+     <div class="item">
+      <div class="tit">1. 自定义快捷回复（换行分隔）</div>
+      <textarea id="customquickreply" placeholder="前排~">前排围观~
+你好啊</textarea>
+    </div>
     <button class="save">保存</button>
   </div>
 </div>`);
@@ -298,9 +295,18 @@
       })
       // 初始化
       function init() {
+        // 屏蔽用户
         var linuxdo_blockuserlist = localStorage.getItem('linuxdo_blockuserlist');
         if (linuxdo_blockuserlist) {
           $('#blockuserlist').val(linuxdo_blockuserlist)
+        }
+        // 自定义快捷回复
+        var linuxdo_customquickreply = localStorage.getItem('linuxdo_customquickreply');
+        if (linuxdo_customquickreply) {
+          $('#customquickreply').val(linuxdo_customquickreply)
+        } else {
+          localStorage.setItem('linuxdo_customquickreply', `前排围观~
+你好啊`);
         }
       }
       init();
@@ -310,9 +316,15 @@
         var blockuserlist = $('#blockuserlist').val();
         localStorage.setItem('linuxdo_blockuserlist', blockuserlist);
       }
+      // 自定义快捷回复
+      function setQuickReply() {
+        var customquickreply = $('#customquickreply').val();
+        localStorage.setItem('linuxdo_customquickreply', customquickreply);
+      }
 
       $('#menu_suspendedball .save').click(function () {
         setBlockUser();
+        setQuickReply();
         $('#menu_suspendedball').hide();
         alert('设置保存成功，请刷新网页！');
       })
@@ -321,23 +333,99 @@
   };
   menu_suspendedball();
 
-  // 运行脚本，默认执行
-  function runscript() {
-    // 屏蔽指定用户
-    var linuxdo_blockuserlist = localStorage.getItem('linuxdo_blockuserlist').split(',') || [];
-    console.log(linuxdo_blockuserlist);
+  // 屏蔽指定用户
+  function menu_blockuserlist() {
+    if (!menu_value('menu_blockuserlist')) return;
+    var linuxdo_blockuserlist = [];
+    if (localStorage.getItem('linuxdo_blockuserlist')) {
+      linuxdo_blockuserlist = localStorage.getItem('linuxdo_blockuserlist').split(',');
+    }
     $('.topic-list .topic-list-data.posters>a:nth-child(1)').each(function () {
       var user = $(this).attr('data-user-card')
-
       if (linuxdo_blockuserlist.indexOf(user) !== -1) {
-        console.log(user, 'block')
         $(this).parents('tr.topic-list-item').remove();
-      } else {
-        console.log(user);
       }
     })
   }
 
+  // 模拟键盘输入文字
+  function simulateInput($textarea, text) {
+    $textarea.focus(); // 聚焦到textarea
+
+    for (let i = 0; i < text.length; i++) {
+      let char = text[i];
+
+      // 更新textarea的值
+      $textarea.val($textarea.val() + char);
+
+      // 创建并派发input事件
+      let inputEvent = new Event('input', {
+        bubbles: true,
+        cancelable: true
+      });
+      $textarea[0].dispatchEvent(inputEvent);
+
+      // 创建并派发keydown事件
+      let keyEvent = new KeyboardEvent('keydown', {
+        key: char,
+        char: char,
+        keyCode: char.charCodeAt(0),
+        which: char.charCodeAt(0),
+        bubbles: true
+      });
+      $textarea[0].dispatchEvent(keyEvent);
+    }
+  }
+
+  // 快捷回复设置
+  function menu_createreply() {
+    if (!menu_value('menu_createreply')) return;
+    var linuxdo_customquickreply = [];
+    if (localStorage.getItem('linuxdo_customquickreply')) {
+      linuxdo_customquickreply = localStorage.getItem('linuxdo_customquickreply').split(/\r?\n/);
+    }
+    setInterval(() => {
+      if ($('.createreply').length < 1) {
+        $('.timeline-container .topic-timeline').append(`<div class="createreply" style="margin-top:4rem;"></div>`)
+
+        linuxdo_customquickreply.forEach(function (item) {
+          var $li = $('<button class="btn btn-default create reply-to-post no-text btn-icon" type="button"></button>').text(item);
+          $('.createreply').append($li);
+        });
+
+        $('.createreply button').click(function () {
+          if ($('.timeline-footer-controls button.create').length != 0) {
+            $('.timeline-footer-controls button.create')[0].click();
+          }
+          if ($('#topic-footer-buttons .topic-footer-main-buttons button.create').length != 0) {
+            $('#topic-footer-buttons .topic-footer-main-buttons button.create')[0].click();
+          }
+
+          setTimeout(() => {
+            let $textarea = $('.d-editor-textarea-wrapper textarea');
+            let text = $(this).html();
+
+            simulateInput($textarea, text);
+          }, 1000);
+        })
+      }
+    }, 1000);
+  }
+  menu_createreply();
+
+  // 默认运行脚本
+  function runscripts() {
+    $('.signature-img').each(function () {
+      if ($(this).siblings('.signature-p').length < 1) {
+        var url = $(this).attr('src');
+        if (url.indexOf('http') < 0) {
+          $(this).after(`<p class="signature-p" style="color:#279a36;font-size:14px;">${url}（该用户签名非图片格式，已自动转文字）</p>`);
+          $(this).hide();
+        }
+      }
+    })
+  }
+  runscripts();
 
   $(function () {
     $('head').append(`<style>
@@ -347,7 +435,8 @@
 .linuxfloor{display:flex;position:absolute;left:-28px;top:0px;color:#96aed0;width:30px;height:30px;align-items:center;justify-content:center;border-radius:6px;font-size:16px}
 
 .topic-list .views{font-weight:400!important;white-space:nowrap!important;}
-
+.createreply{display:flex;flex-direction:column;}
+.createreply button{margin-bottom:10px;justify-content:flex-start;}
 .menu_suspendedball *{box-sizing:border-box;margin:0;padding:0}
 .menu_suspendedball .close{position:absolute;right:10px;top:3px;cursor:pointer;font-size:34px;color:#999;transform:rotate(45deg)}
 .menu_suspendedball>.btn{z-index:99;position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d1f0ff;color:#999;font-size:22px;cursor:pointer}
@@ -361,18 +450,35 @@
 #menu_suspendedball .item .tit{text-align:left;font-size:15px;margin-bottom:6px}
 #menu_suspendedball .item textarea{font-family:inherit;width:100%;min-height:100px;border-radius:5px;border:1px solid #999;outline:0;padding:5px;font-size:14px;transition:all .1s linear;resize:none}
 #menu_suspendedball .item textarea:focus{border-color:#333}
-
         </style>`)
 
-    let pollinglength = 0;
+    // 帖子列表
+    let pollinglength1 = 0;
     setInterval(() => {
-      if (pollinglength != $('.topic-list-body tr').length) {
-        pollinglength = $('.topic-list-body tr').length
+      if (pollinglength1 != $('.topic-list-body tr').length) {
+        pollinglength1 = $('.topic-list-body tr').length
         // 需要轮询的方法
         menu_showcreatetime(); // 显示创建时间
         menu_showfloors(); // 显示楼层数
         menu_openpostblank(); // 新标签页打开话题
-        runscript(); // 运行默认脚本
+        menu_blockuserlist(); // 屏蔽指定用户
+
+        runscripts(); // 默认运行脚本
+      }
+    }, 1000);
+
+    // 帖子详情
+    let pollinglength2 = 0;
+    setInterval(() => {
+      if (pollinglength2 != $('.post-stream .topic-post').length) {
+        pollinglength2 = $('.post-stream .topic-post').length
+        // 需要轮询的方法
+        menu_showcreatetime(); // 显示创建时间
+        menu_showfloors(); // 显示楼层数
+        menu_openpostblank(); // 新标签页打开话题
+        menu_blockuserlist(); // 屏蔽指定用户
+
+        runscripts(); // 默认运行脚本
       }
     }, 1000);
 
