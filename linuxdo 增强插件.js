@@ -267,29 +267,27 @@
     if (!menu_value('menu_suspendedball')) return;
     setTimeout(() => {
       $('body').append(`<div class="menu_suspendedball">
-  <div class="opendialog"><svg class="fa d-icon d-icon-cog svg-icon svg-string" xmlns="http://www.w3.org/2000/svg">
-      <use href="#cog"></use>
-    </svg></div>
-  <div id="menu_suspendedball">
-    <div class="title">设置</div><div class="close">+</div>
-    <p class="hint">请注意，该设置面板数据都保存在浏览器缓存中，注意备份。<br>暂不支持导入导出，后期会有该项功能的开发计划。</p>
-    <div class="item">
-      <div class="tit">1. 屏蔽用户列表（使用英文,分隔）</div>
-      <textarea id="blockuserlist" placeholder="user1,user2,user3"></textarea>
-    </div>
-     <div class="item">
-      <div class="tit">2. 自定义快捷回复（换行分隔）</div>
-      <textarea id="customquickreply" placeholder="前排~">前排围观~
+        <div class="opendialog"><svg class="fa d-icon d-icon-cog svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#cog"></use></svg></div>
+        <div id="menu_suspendedball">
+          <div class="title">设置</div><div class="close">+</div>
+          <p class="hint">请注意，该设置面板数据都保存在浏览器缓存中，注意备份。<br>暂不支持导入导出，后期会有该项功能的开发计划。</p>
+          <div class="item">
+            <div class="tit">1. 屏蔽用户列表（使用英文,分隔）</div>
+            <textarea id="blockuserlist" placeholder="user1,user2,user3"></textarea>
+          </div>
+          <div class="item">
+            <div class="tit">2. 自定义快捷回复（换行分隔）</div>
+            <textarea id="customquickreply" placeholder="前排~">前排围观~
 你好啊</textarea>
-    </div>
-    <div class="flex">
-      <button class="btn save">保存</button>
-      <button class="btn import">导入</button>
-      <input type="file" id="fileInput" style="display:none;" accept=".json">
-      <button class="btn export">导出</button>
-    </div>
-  </div>
-</div>`);
+          </div>
+          <div class="flex">
+            <button class="btn save">保存</button>
+            <button class="btn import">导入</button>
+            <input type="file" id="fileInput" style="display:none;" accept=".json">
+            <button class="btn export">导出</button>
+          </div>
+        </div>
+      </div>`);
 
       $('.menu_suspendedball .opendialog').click(function () {
         $('#menu_suspendedball').show();
@@ -300,7 +298,6 @@
       })
 
       // 导入
-      // 导入按钮功能
       $('.menu_suspendedball .import').click(function () {
         // 触发隐藏的文件输入元素的点击事件
         $('#fileInput').click();
