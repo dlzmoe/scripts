@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.15
+// @version      0.0.16
 // @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
@@ -143,7 +143,7 @@
     }
   }
 
-  function init() {
+  function setinitdate() {
     $('.topic-list .age').each(function () {
       const str = $(this).attr('title');
       var match = str.match(/创建日期：([\s\S]*?)最新：/);
@@ -219,7 +219,7 @@
   function menu_showcreatetime() {
     if (!menu_value('menu_showcreatetime')) return;
     setInterval(() => {
-      init();
+      setinitdate();
     }, 1000);
   }
 
@@ -267,7 +267,7 @@
     if (!menu_value('menu_suspendedball')) return;
     setTimeout(() => {
       $('body').append(`<div class="menu_suspendedball">
-  <div class="btn"><svg class="fa d-icon d-icon-cog svg-icon svg-string" xmlns="http://www.w3.org/2000/svg">
+  <div class="opendialog"><svg class="fa d-icon d-icon-cog svg-icon svg-string" xmlns="http://www.w3.org/2000/svg">
       <use href="#cog"></use>
     </svg></div>
   <div id="menu_suspendedball">
@@ -278,21 +278,94 @@
       <textarea id="blockuserlist" placeholder="user1,user2,user3"></textarea>
     </div>
      <div class="item">
-      <div class="tit">1. 自定义快捷回复（换行分隔）</div>
+      <div class="tit">2. 自定义快捷回复（换行分隔）</div>
       <textarea id="customquickreply" placeholder="前排~">前排围观~
 你好啊</textarea>
     </div>
-    <button class="save">保存</button>
+    <div class="flex">
+      <button class="btn save">保存</button>
+      <button class="btn import">导入</button>
+      <input type="file" id="fileInput" style="display:none;" accept=".json">
+      <button class="btn export">导出</button>
+    </div>
   </div>
 </div>`);
 
-      $('.menu_suspendedball>.btn').click(function () {
+      $('.menu_suspendedball .opendialog').click(function () {
         $('#menu_suspendedball').show();
       })
 
       $('.menu_suspendedball .close').click(function () {
         $('#menu_suspendedball').hide();
       })
+
+      // 导入
+      // 导入按钮功能
+      $('.menu_suspendedball .import').click(function () {
+        // 触发隐藏的文件输入元素的点击事件
+        $('#fileInput').click();
+      });
+
+      // 处理文件选择
+      $('#fileInput').change(function (event) {
+        var file = event.target.files[0];
+        if (file) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            try {
+              // 解析JSON内容
+              var jsonData = JSON.parse(e.target.result);
+
+              // 屏蔽用户
+              if (jsonData.blockuserlist !== undefined) {
+                $('#blockuserlist').val(jsonData.blockuserlist);
+              }
+              // 快捷回复
+              if (jsonData.customquickreply !== undefined) {
+                $('#customquickreply').val(jsonData.customquickreply);
+              }
+            } catch (err) {
+              alert("Error parsing JSON: " + err.message);
+            }
+          };
+          reader.readAsText(file);
+        }
+      });
+
+
+      // 导出
+      $('.menu_suspendedball .export').click(function () {
+        var content1 = $('#blockuserlist').val();
+        var content2 = $('#customquickreply').val();
+
+        var data = {
+          blockuserlist: content1,
+          customquickreply: content2
+        };
+
+        var jsonString = JSON.stringify(data, null, 2);
+        var blob = new Blob([jsonString], {
+          type: "application/json"
+        });
+
+        // 获取当前日期并格式化为 YYYYMMDD
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = String(today.getMonth() + 1).padStart(2, '0');
+        var day = String(today.getDate()).padStart(2, '0');
+        var formattedDate = year + month + day;
+
+        var filename = "linuxdo-plugin-" + formattedDate + ".json";
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
       // 初始化
       function init() {
         // 屏蔽用户
@@ -413,14 +486,27 @@
   }
   menu_createreply();
 
+  // 定义一个正则表达式来匹配域名结尾
+  function isDomainEnding(str) {
+    var domainPattern = /\.(com|org|net|edu|gov|co|cn|io|info|biz|me|us|uk|au|de|fr|jp|ru|ch|it|nl|se|no|es|mil|int|arpa|asia|museum|name|pro|coop|aero|cat|jobs|mobi|travel|xxx|idv|tv|cc|ws|bz|nu|tk|fm|ag|am|at|be|bg|cd|cf|cg|ch|cl|cm|cz|dk|dm|ec|ee|es|eu|fi|ga|gd|gf|gg|gl|gp|gr|hm|hr|ht|hu|im|io|is|je|ke|kg|ki|kr|kz|la|lc|li|lt|lu|lv|ma|mc|md|ms|mt|mu|mx|my|nf|ng|nl|no|nz|pa|pe|pf|pg|pl|pm|pn|pr|pt|pw|re|ro|rs|sa|sb|sc|sg|sh|si|sk|sm|sn|so|st|su|sx|tc|tf|tk|tl|tm|to|tr|tt|tw|ua|ug|uy|uz|vc|ve|vg|vn|vu|wf|yt|za|zm|zw)$/i;
+    return domainPattern.test(str);
+  }
   // 默认运行脚本
   function runscripts() {
     $('.signature-img').each(function () {
       if ($(this).siblings('.signature-p').length < 1) {
         var url = $(this).attr('src');
+
+        // 先判断是否带 http
         if (url.indexOf('http') < 0) {
           $(this).after(`<p class="signature-p" style="color:#279a36;font-size:14px;">${url}（该用户签名非图片格式，已自动转文字）</p>`);
           $(this).hide();
+        } else {
+          // 在带 http 的链接中判断是否是域名，大几率是博客域名
+          if (isDomainEnding(url)) {
+            $(this).after(`<p class="signature-p" style="color:#279a36;font-size:14px;">${url}（该用户签名非图片格式，已自动转文字）</p>`);
+            $(this).hide();
+          }
         }
       }
     })
@@ -439,13 +525,17 @@
 .createreply button{margin-bottom:10px;justify-content:flex-start;}
 .menu_suspendedball *{box-sizing:border-box;margin:0;padding:0}
 .menu_suspendedball .close{position:absolute;right:10px;top:3px;cursor:pointer;font-size:34px;color:#999;transform:rotate(45deg)}
-.menu_suspendedball>.btn{z-index:99;position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d1f0ff;color:#999;font-size:22px;cursor:pointer}
-.menu_suspendedball>.btn svg{margin:0}
+.menu_suspendedball .opendialog{z-index:99;position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d1f0ff;color:#999;font-size:22px;cursor:pointer}
+.menu_suspendedball .opendialog svg{margin:0}
 .menu_suspendedball .hint{margin-top:5px;color:#d94f4f;font-size:14px}
-#menu_suspendedball{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:600px;height:400px;overflow-y:auto;background:#fff;color:#333;box-shadow:1px 2px 5px rgba(0,0,0,.2);border-radius:10px;padding:15px;z-index:999;overflow-x:hidden;}
+#menu_suspendedball{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:600px;height:430px;overflow-y:auto;background:#fff;color:#333;box-shadow:1px 2px 5px rgba(0,0,0,.2);border-radius:10px;padding:15px;z-index:999;overflow-x:hidden;}
 #menu_suspendedball .title{font-size:18px;text-align:center;font-weight:600}
-#menu_suspendedball .save{border:none;outline:0;min-width:80px;height:35px;display:inline-flex;align-items:center;justify-content:center;background:#1c1c1e;color:#fff;font-size:15px;border-radius:5px;cursor:pointer;transition:all .1s linear}
-#menu_suspendedball .save:hover{background:#333}
+#menu_suspendedball .btn{border:none;outline:0;min-width:80px;height:32px;display:inline-flex;align-items:center;justify-content:center;background:#1c1c1e;color:#fff;font-size:14px;border-radius:5px;cursor:pointer;transition:all .1s linear}
+#menu_suspendedball .btn:hover{opacity:0.9;}
+#menu_suspendedball .flex{display:flex;justify-content:space-between;}
+#menu_suspendedball .import{margin-left:auto;margin-right:10px;}
+#menu_suspendedball .import,#menu_suspendedball .export{background:#D1F0FF;color:#559095;}
+
 #menu_suspendedball .item{margin-top:10px}
 #menu_suspendedball .item .tit{text-align:left;font-size:15px;margin-bottom:6px}
 #menu_suspendedball .item textarea{font-family:inherit;width:100%;min-height:100px;border-radius:5px;border:1px solid #999;outline:0;padding:5px;font-size:14px;transition:all .1s linear;resize:none}
