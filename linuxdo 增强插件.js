@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.16
-// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，功能持续更新，欢迎提出。
+// @version      0.0.21
+// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖等，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
 // @grant        GM_xmlhttpRequest
@@ -22,11 +22,13 @@
 
   var menu_ALL = [
     ['menu_openpostblank', '新标签页打开话题', '新标签页打开话题', false],
+    ['menu_autoexpandreply', '自动展开回复', '自动展开回复', false],
     ['menu_showcreatetime', '话题列表显示创建时间', '话题列表显示创建时间', true],
     ['menu_viewstotime', '将浏览量替换为创建时间', '将浏览量替换为创建时间', false],
     ['menu_showfloors', '显示楼层数', '显示楼层数', true],
     ['menu_hidereplytail', '隐藏跟帖小尾巴签名', '隐藏跟帖小尾巴签名', false],
     ['menu_showchattime', '显示聊天频道时间', '显示聊天频道时间', false],
+    ['menu_hidetopicdetailtitle', '隐藏话题详情顶部大标题', '隐藏话题详情顶部大标题', false],
     ['menu_createreply', '快捷创建回复', '快捷创建回复', true],
     ['menu_blockuserlist', '屏蔽指定用户', '屏蔽指定用户', true],
     ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', true],
@@ -270,7 +272,7 @@
         <div class="opendialog"><svg class="fa d-icon d-icon-cog svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#cog"></use></svg></div>
         <div id="menu_suspendedball">
           <div class="title">设置</div><div class="close">+</div>
-          <p class="hint">请注意，该设置面板数据都保存在浏览器缓存中，注意备份。<br>暂不支持导入导出，后期会有该项功能的开发计划。</p>
+          <p class="hint">请注意，该设置面板数据全部保存在本地浏览器缓存中，注意备份。</p>
           <div class="item">
             <div class="tit">1. 屏蔽用户列表（使用英文,分隔）</div>
             <textarea id="blockuserlist" placeholder="user1,user2,user3"></textarea>
@@ -282,12 +284,31 @@
           </div>
           <div class="flex">
             <button class="btn save">保存</button>
+            <button class="btn floorlottery">楼层抽奖</button>
             <button class="btn import">导入</button>
             <input type="file" id="fileInput" style="display:none;" accept=".json">
             <button class="btn export">导出</button>
           </div>
         </div>
-      </div>`);
+      </div>
+      
+      <dialog open class="floorlotterywrap">
+        <div>
+          <label for="totalFloors">总楼层：</label>
+          <input type="number" id="totalFloors" min="1">
+        </div>
+        <div>
+          <label for="numToDraw">需要抽取的个数：</label>
+          <input type="number" id="numToDraw" min="1">
+        </div>
+        <button id="floorlotterdrawButton" class="btn">确定</button>
+        <button id="floorlotterclose" class="btn">关闭</button>
+        <div id="floorlotterloading" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-loader"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6l0 -3" /><path d="M16.25 7.75l2.15 -2.15" /><path d="M18 12l3 0" /><path d="M16.25 16.25l2.15 2.15" /><path d="M12 18l0 3" /><path d="M7.75 16.25l-2.15 2.15" /><path d="M6 12l-3 0" /><path d="M7.75 7.75l-2.15 -2.15" /></svg>
+        </div>
+        <div id="result"></div>
+      </dialog>
+      `);
 
       $('.menu_suspendedball .opendialog').click(function () {
         $('#menu_suspendedball').show();
@@ -329,6 +350,42 @@
         }
       });
 
+      // 楼层抽奖
+      $('.floorlottery').click(function () {
+        $('#menu_suspendedball').hide();
+        $('.floorlotterywrap').show();
+      })
+
+      // 开始
+      $('#floorlotterdrawButton').click(function () {
+        var totalFloors = parseInt($('#totalFloors').val());
+        var numToDraw = parseInt($('#numToDraw').val());
+
+        if (isNaN(totalFloors) || isNaN(numToDraw) || totalFloors <= 0 || numToDraw <= 0 || numToDraw > totalFloors) {
+          alert('请输入有效的数字');
+          return;
+        }
+
+        $('#floorlotterloading').show();
+        $('#result').empty();
+
+        setTimeout(function () {
+          var drawnFloors = [];
+          while (drawnFloors.length < numToDraw) {
+            var randomFloor = Math.floor(Math.random() * totalFloors) + 1;
+            if (!drawnFloors.includes(randomFloor)) {
+              drawnFloors.push(randomFloor);
+            }
+          }
+
+          $('#floorlotterloading').hide();
+          $('#result').text('抽取到的楼层是：' + drawnFloors.join(', '));
+        }, 2000); // 模拟2秒的加载时间
+      });
+      // 关闭弹窗
+      $('#floorlotterclose').click(function () {
+        $('.floorlotterywrap').hide();
+      })
 
       // 导出
       $('.menu_suspendedball .export').click(function () {
@@ -483,6 +540,22 @@
   }
   menu_createreply();
 
+  // 自动展开回复
+  function menu_autoexpandreply() {
+    if (!menu_value('menu_autoexpandreply')) return;
+    $('nav.post-controls .show-replies').each(function () {
+      if ($(this).html().includes('个回复') && $(this).attr('aria-expanded') === 'false') {
+        $(this).click();
+      }
+    })
+  }
+
+  // 隐藏话题详情顶部大标题
+  function menu_hidetopicdetailtitle() {
+    if (!menu_value('menu_hidetopicdetailtitle')) return;
+    $('head').append(`<style>.header-title{display:none!important}</style>`);
+  }
+
   // 定义一个正则表达式来匹配域名结尾
   function isDomainEnding(str) {
     var domainPattern = /\.(com|org|net|edu|gov|co|cn|io|info|biz|me|us|uk|au|de|fr|jp|ru|ch|it|nl|se|no|es|mil|int|arpa|asia|museum|name|pro|coop|aero|cat|jobs|mobi|travel|xxx|idv|tv|cc|ws|bz|nu|tk|fm|ag|am|at|be|bg|cd|cf|cg|ch|cl|cm|cz|dk|dm|ec|ee|es|eu|fi|ga|gd|gf|gg|gl|gp|gr|hm|hr|ht|hu|im|io|is|je|ke|kg|ki|kr|kz|la|lc|li|lt|lu|lv|ma|mc|md|ms|mt|mu|mx|my|nf|ng|nl|no|nz|pa|pe|pf|pg|pl|pm|pn|pr|pt|pw|re|ro|rs|sa|sb|sc|sg|sh|si|sk|sm|sn|so|st|su|sx|tc|tf|tk|tl|tm|to|tr|tt|tw|ua|ug|uy|uz|vc|ve|vg|vn|vu|wf|yt|za|zm|zw)$/i;
@@ -496,12 +569,16 @@
 
         // 先判断是否带 http
         if (url.indexOf('http') < 0) {
-          $(this).after(`<p class="signature-p" style="color:#279a36;font-size:14px;">${url}（该用户签名非图片格式，已自动转文字）</p>`);
+          $(this).after(`<p class="signature-p">${url}（该用户签名非图片格式，已自动转文字）</p>`);
           $(this).hide();
         } else {
           // 在带 http 的链接中判断是否是域名，大几率是博客域名
           if (isDomainEnding(url)) {
-            $(this).after(`<p class="signature-p" style="color:#279a36;font-size:14px;">${url}（该用户签名非图片格式，已自动转文字）</p>`);
+            $(this).after(`<p class="signature-p">${url}（该用户签名非图片格式，已自动转文字）</p>`);
+            $(this).hide();
+          } else if (url.indexOf('photos.google.com') !== -1) {
+            // 判断是否是 google photo
+            $(this).after(`<p class="signature-p">${url}（该用户签名非图片格式，已自动转文字）</p>`);
             $(this).hide();
           }
         }
@@ -516,10 +593,10 @@
 
 .topic-post{position:relative;}
 .linuxfloor{display:flex;position:absolute;left:-28px;top:0px;color:#96aed0;width:30px;height:30px;align-items:center;justify-content:center;border-radius:6px;font-size:16px}
-
+.signature-p{color:#279a36;font-size:14px;word-break:break-word;}
 .topic-list .views{font-weight:400!important;white-space:nowrap!important;}
-.createreply{display:flex;flex-direction:column;}
-.createreply button{margin-bottom:10px;justify-content:flex-start;}
+.createreply{display:flex;flex-direction:column;max-width:300px;}
+.createreply button{margin-bottom:10px;justify-content:flex-start;text-align:left;}
 .menu_suspendedball *{box-sizing:border-box;margin:0;padding:0}
 .menu_suspendedball .close{position:absolute;right:10px;top:3px;cursor:pointer;font-size:34px;color:#999;transform:rotate(45deg)}
 .menu_suspendedball .opendialog{z-index:99;position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d1f0ff;color:#999;font-size:22px;cursor:pointer}
@@ -532,12 +609,16 @@
 #menu_suspendedball .flex{display:flex;justify-content:space-between;}
 #menu_suspendedball .import{margin-left:auto;margin-right:10px;}
 #menu_suspendedball .import,#menu_suspendedball .export{background:#D1F0FF;color:#559095;}
-
+#menu_suspendedball .floorlottery{margin-left:10px;background:#FFB003}
 #menu_suspendedball .item{margin-top:10px}
 #menu_suspendedball .item .tit{text-align:left;font-size:15px;margin-bottom:6px}
 #menu_suspendedball .item textarea{font-family:inherit;width:100%;min-height:100px;border-radius:5px;border:1px solid #999;outline:0;padding:5px;font-size:14px;transition:all .1s linear;resize:none}
 #menu_suspendedball .item textarea:focus{border-color:#333}
-        </style>`)
+
+#floorlotterloading img{width:50px;height:50px}
+.floorlotterywrap{display:none;width:400px;height:300px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;z-index:999}
+.floorlotterywrap{width:400px;height:300px}
+        </>`)
 
     // 帖子列表
     let pollinglength1 = 0;
@@ -549,7 +630,8 @@
         menu_showfloors(); // 显示楼层数
         menu_openpostblank(); // 新标签页打开话题
         menu_blockuserlist(); // 屏蔽指定用户
-
+        menu_autoexpandreply(); // 自动展开回复
+        menu_hidetopicdetailtitle(); // 隐藏话题详情顶部大标题
         runscripts(); // 默认运行脚本
       }
     }, 1000);
@@ -564,7 +646,8 @@
         menu_showfloors(); // 显示楼层数
         menu_openpostblank(); // 新标签页打开话题
         menu_blockuserlist(); // 屏蔽指定用户
-
+        menu_autoexpandreply(); // 自动展开回复
+        menu_hidetopicdetailtitle(); // 隐藏话题详情顶部大标题
         runscripts(); // 默认运行脚本
       }
     }, 1000);
