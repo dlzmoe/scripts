@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.16
+// @version      0.0.18
 // @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
@@ -22,6 +22,7 @@
 
   var menu_ALL = [
     ['menu_openpostblank', '新标签页打开话题', '新标签页打开话题', false],
+    ['menu_autoexpandreply', '自动展开回复', '自动展开回复', true],
     ['menu_showcreatetime', '话题列表显示创建时间', '话题列表显示创建时间', true],
     ['menu_viewstotime', '将浏览量替换为创建时间', '将浏览量替换为创建时间', false],
     ['menu_showfloors', '显示楼层数', '显示楼层数', true],
@@ -483,6 +484,16 @@
   }
   menu_createreply();
 
+  // 自动展开回复
+  function menu_autoexpandreply() {
+    if (!menu_value('menu_autoexpandreply')) return;
+    $('nav.post-controls .show-replies').each(function () {
+      if ($(this).html().includes('个回复') && $(this).attr('aria-expanded') === 'false') {
+        $(this).click();
+      }
+    })
+  }
+
   // 定义一个正则表达式来匹配域名结尾
   function isDomainEnding(str) {
     var domainPattern = /\.(com|org|net|edu|gov|co|cn|io|info|biz|me|us|uk|au|de|fr|jp|ru|ch|it|nl|se|no|es|mil|int|arpa|asia|museum|name|pro|coop|aero|cat|jobs|mobi|travel|xxx|idv|tv|cc|ws|bz|nu|tk|fm|ag|am|at|be|bg|cd|cf|cg|ch|cl|cm|cz|dk|dm|ec|ee|es|eu|fi|ga|gd|gf|gg|gl|gp|gr|hm|hr|ht|hu|im|io|is|je|ke|kg|ki|kr|kz|la|lc|li|lt|lu|lv|ma|mc|md|ms|mt|mu|mx|my|nf|ng|nl|no|nz|pa|pe|pf|pg|pl|pm|pn|pr|pt|pw|re|ro|rs|sa|sb|sc|sg|sh|si|sk|sm|sn|so|st|su|sx|tc|tf|tk|tl|tm|to|tr|tt|tw|ua|ug|uy|uz|vc|ve|vg|vn|vu|wf|yt|za|zm|zw)$/i;
@@ -518,8 +529,8 @@
 .linuxfloor{display:flex;position:absolute;left:-28px;top:0px;color:#96aed0;width:30px;height:30px;align-items:center;justify-content:center;border-radius:6px;font-size:16px}
 
 .topic-list .views{font-weight:400!important;white-space:nowrap!important;}
-.createreply{display:flex;flex-direction:column;}
-.createreply button{margin-bottom:10px;justify-content:flex-start;}
+.createreply{display:flex;flex-direction:column;max-width:300px;}
+.createreply button{margin-bottom:10px;justify-content:flex-start;text-align:left;}
 .menu_suspendedball *{box-sizing:border-box;margin:0;padding:0}
 .menu_suspendedball .close{position:absolute;right:10px;top:3px;cursor:pointer;font-size:34px;color:#999;transform:rotate(45deg)}
 .menu_suspendedball .opendialog{z-index:99;position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d1f0ff;color:#999;font-size:22px;cursor:pointer}
@@ -549,7 +560,7 @@
         menu_showfloors(); // 显示楼层数
         menu_openpostblank(); // 新标签页打开话题
         menu_blockuserlist(); // 屏蔽指定用户
-
+        menu_autoexpandreply(); // 自动展开回复
         runscripts(); // 默认运行脚本
       }
     }, 1000);
@@ -564,7 +575,7 @@
         menu_showfloors(); // 显示楼层数
         menu_openpostblank(); // 新标签页打开话题
         menu_blockuserlist(); // 屏蔽指定用户
-
+        menu_autoexpandreply(); // 自动展开回复
         runscripts(); // 默认运行脚本
       }
     }, 1000);
