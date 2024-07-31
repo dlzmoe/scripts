@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.18
-// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，功能持续更新，欢迎提出。
+// @version      0.0.19
+// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖等，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
 // @grant        GM_xmlhttpRequest
@@ -22,7 +22,7 @@
 
   var menu_ALL = [
     ['menu_openpostblank', '新标签页打开话题', '新标签页打开话题', false],
-    ['menu_autoexpandreply', '自动展开回复', '自动展开回复', true],
+    ['menu_autoexpandreply', '自动展开回复', '自动展开回复', false],
     ['menu_showcreatetime', '话题列表显示创建时间', '话题列表显示创建时间', true],
     ['menu_viewstotime', '将浏览量替换为创建时间', '将浏览量替换为创建时间', false],
     ['menu_showfloors', '显示楼层数', '显示楼层数', true],
@@ -271,7 +271,7 @@
         <div class="opendialog"><svg class="fa d-icon d-icon-cog svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#cog"></use></svg></div>
         <div id="menu_suspendedball">
           <div class="title">设置</div><div class="close">+</div>
-          <p class="hint">请注意，该设置面板数据都保存在浏览器缓存中，注意备份。<br>暂不支持导入导出，后期会有该项功能的开发计划。</p>
+          <p class="hint">请注意，该设置面板数据全部保存在本地浏览器缓存中，注意备份。</p>
           <div class="item">
             <div class="tit">1. 屏蔽用户列表（使用英文,分隔）</div>
             <textarea id="blockuserlist" placeholder="user1,user2,user3"></textarea>
@@ -283,12 +283,31 @@
           </div>
           <div class="flex">
             <button class="btn save">保存</button>
+            <button class="btn floorlottery">楼层抽奖</button>
             <button class="btn import">导入</button>
             <input type="file" id="fileInput" style="display:none;" accept=".json">
             <button class="btn export">导出</button>
           </div>
         </div>
-      </div>`);
+      </div>
+      
+      <dialog open class="floorlotterywrap">
+        <div>
+          <label for="totalFloors">总楼层：</label>
+          <input type="number" id="totalFloors" min="1">
+        </div>
+        <div>
+          <label for="numToDraw">需要抽取的个数：</label>
+          <input type="number" id="numToDraw" min="1">
+        </div>
+        <button id="floorlotterdrawButton" class="btn">确定</button>
+        <button id="floorlotterclose" class="btn">关闭</button>
+        <div id="floorlotterloading" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-loader"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6l0 -3" /><path d="M16.25 7.75l2.15 -2.15" /><path d="M18 12l3 0" /><path d="M16.25 16.25l2.15 2.15" /><path d="M12 18l0 3" /><path d="M7.75 16.25l-2.15 2.15" /><path d="M6 12l-3 0" /><path d="M7.75 7.75l-2.15 -2.15" /></svg>
+        </div>
+        <div id="result"></div>
+      </dialog>
+      `);
 
       $('.menu_suspendedball .opendialog').click(function () {
         $('#menu_suspendedball').show();
@@ -330,6 +349,42 @@
         }
       });
 
+      // 楼层抽奖
+      $('.floorlottery').click(function () {
+        $('#menu_suspendedball').hide();
+        $('.floorlotterywrap').show();
+      })
+
+      // 开始
+      $('#floorlotterdrawButton').click(function () {
+        var totalFloors = parseInt($('#totalFloors').val());
+        var numToDraw = parseInt($('#numToDraw').val());
+
+        if (isNaN(totalFloors) || isNaN(numToDraw) || totalFloors <= 0 || numToDraw <= 0 || numToDraw > totalFloors) {
+          alert('请输入有效的数字');
+          return;
+        }
+
+        $('#floorlotterloading').show();
+        $('#result').empty();
+
+        setTimeout(function () {
+          var drawnFloors = [];
+          while (drawnFloors.length < numToDraw) {
+            var randomFloor = Math.floor(Math.random() * totalFloors) + 1;
+            if (!drawnFloors.includes(randomFloor)) {
+              drawnFloors.push(randomFloor);
+            }
+          }
+
+          $('#floorlotterloading').hide();
+          $('#result').text('抽取到的楼层是：' + drawnFloors.join(', '));
+        }, 2000); // 模拟2秒的加载时间
+      });
+      // 关闭弹窗
+      $('#floorlotterclose').click(function(){
+        $('.floorlotterywrap').hide();
+      })
 
       // 导出
       $('.menu_suspendedball .export').click(function () {
@@ -543,11 +598,15 @@
 #menu_suspendedball .flex{display:flex;justify-content:space-between;}
 #menu_suspendedball .import{margin-left:auto;margin-right:10px;}
 #menu_suspendedball .import,#menu_suspendedball .export{background:#D1F0FF;color:#559095;}
-
+#menu_suspendedball .floorlottery{margin-left:10px;background:#FFB003}
 #menu_suspendedball .item{margin-top:10px}
 #menu_suspendedball .item .tit{text-align:left;font-size:15px;margin-bottom:6px}
 #menu_suspendedball .item textarea{font-family:inherit;width:100%;min-height:100px;border-radius:5px;border:1px solid #999;outline:0;padding:5px;font-size:14px;transition:all .1s linear;resize:none}
 #menu_suspendedball .item textarea:focus{border-color:#333}
+
+#floorlotterloading img{width:50px;height:50px}
+.floorlotterywrap{display:none;width:400px;height:300px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;z-index:999}
+.floorlotterywrap{width:400px;height:300px}
         </style>`)
 
     // 帖子列表
