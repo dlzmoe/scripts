@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.19
+// @version      0.0.20
 // @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖等，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
@@ -28,6 +28,7 @@
     ['menu_showfloors', '显示楼层数', '显示楼层数', true],
     ['menu_hidereplytail', '隐藏跟帖小尾巴签名', '隐藏跟帖小尾巴签名', false],
     ['menu_showchattime', '显示聊天频道时间', '显示聊天频道时间', false],
+    ['menu_hidetopicdetailtitle', '隐藏话题详情顶部大标题', '隐藏话题详情顶部大标题', false],
     ['menu_createreply', '快捷创建回复', '快捷创建回复', true],
     ['menu_blockuserlist', '屏蔽指定用户', '屏蔽指定用户', true],
     ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', true],
@@ -549,6 +550,12 @@
     })
   }
 
+  // 隐藏话题详情顶部大标题
+  function menu_hidetopicdetailtitle() {
+    if (!menu_value('menu_hidetopicdetailtitle')) return;
+    $('head').append(`<style>.header-title{display:none!important}</style>`);
+  }
+
   // 定义一个正则表达式来匹配域名结尾
   function isDomainEnding(str) {
     var domainPattern = /\.(com|org|net|edu|gov|co|cn|io|info|biz|me|us|uk|au|de|fr|jp|ru|ch|it|nl|se|no|es|mil|int|arpa|asia|museum|name|pro|coop|aero|cat|jobs|mobi|travel|xxx|idv|tv|cc|ws|bz|nu|tk|fm|ag|am|at|be|bg|cd|cf|cg|ch|cl|cm|cz|dk|dm|ec|ee|es|eu|fi|ga|gd|gf|gg|gl|gp|gr|hm|hr|ht|hu|im|io|is|je|ke|kg|ki|kr|kz|la|lc|li|lt|lu|lv|ma|mc|md|ms|mt|mu|mx|my|nf|ng|nl|no|nz|pa|pe|pf|pg|pl|pm|pn|pr|pt|pw|re|ro|rs|sa|sb|sc|sg|sh|si|sk|sm|sn|so|st|su|sx|tc|tf|tk|tl|tm|to|tr|tt|tw|ua|ug|uy|uz|vc|ve|vg|vn|vu|wf|yt|za|zm|zw)$/i;
@@ -607,7 +614,7 @@
 #floorlotterloading img{width:50px;height:50px}
 .floorlotterywrap{display:none;width:400px;height:300px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;z-index:999}
 .floorlotterywrap{width:400px;height:300px}
-        </style>`)
+        </>`)
 
     // 帖子列表
     let pollinglength1 = 0;
@@ -620,6 +627,7 @@
         menu_openpostblank(); // 新标签页打开话题
         menu_blockuserlist(); // 屏蔽指定用户
         menu_autoexpandreply(); // 自动展开回复
+        menu_hidetopicdetailtitle(); // 隐藏话题详情顶部大标题
         runscripts(); // 默认运行脚本
       }
     }, 1000);
@@ -635,6 +643,7 @@
         menu_openpostblank(); // 新标签页打开话题
         menu_blockuserlist(); // 屏蔽指定用户
         menu_autoexpandreply(); // 自动展开回复
+        menu_hidetopicdetailtitle(); // 隐藏话题详情顶部大标题
         runscripts(); // 默认运行脚本
       }
     }, 1000);
