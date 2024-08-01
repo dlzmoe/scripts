@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.22
+// @version      0.0.23
 // @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖，新话题提醒（标签页保持在/new）等，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
@@ -516,26 +516,29 @@
       if ($('.createreply').length < 1) {
         $('.timeline-container .topic-timeline').append(`<div class="createreply" style="margin-top:4rem;"></div>`)
 
-        linuxdo_customquickreply.forEach(function (item) {
-          var $li = $('<button class="btn btn-default create reply-to-post no-text btn-icon" type="button"></button>').text(item);
-          $('.createreply').append($li);
-        });
+        setTimeout(() => {
+          linuxdo_customquickreply.forEach(function (item) {
+            var $li = $('<button class="btn btn-default create reply-to-post no-text btn-icon" type="button"></button>').text(item);
+            $('.createreply').append($li);
+          });
 
-        $('.createreply button').click(function () {
-          if ($('.timeline-footer-controls button.create').length != 0) {
-            $('.timeline-footer-controls button.create')[0].click();
-          }
-          if ($('#topic-footer-buttons .topic-footer-main-buttons button.create').length != 0) {
-            $('#topic-footer-buttons .topic-footer-main-buttons button.create')[0].click();
-          }
+          $('.createreply button').click(function () {
+            if ($('.timeline-footer-controls button.create').length != 0) {
+              $('.timeline-footer-controls button.create')[0].click();
+            }
+            if ($('#topic-footer-buttons .topic-footer-main-buttons button.create').length != 0) {
+              $('#topic-footer-buttons .topic-footer-main-buttons button.create')[0].click();
+            }
 
-          setTimeout(() => {
-            let $textarea = $('.d-editor-textarea-wrapper textarea');
-            let text = $(this).html();
+            setTimeout(() => {
+              let $textarea = $('.d-editor-textarea-wrapper textarea');
+              let text = $(this).html();
 
-            simulateInput($textarea, text);
-          }, 1000);
-        })
+              simulateInput($textarea, text);
+            }, 1000);
+          })
+        }, 1000);
+
       }
     }, 1000);
   }
