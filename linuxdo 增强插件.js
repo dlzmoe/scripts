@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.21
-// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖等，功能持续更新，欢迎提出。
+// @version      0.0.22
+// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖，新话题提醒（标签页保持在/new）等，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
 // @grant        GM_xmlhttpRequest
@@ -22,6 +22,7 @@
 
   var menu_ALL = [
     ['menu_openpostblank', '新标签页打开话题', '新标签页打开话题', false],
+    ['menu_newtopicreminder', '新话题提醒', '新话题提醒', false],
     ['menu_autoexpandreply', '自动展开回复', '自动展开回复', false],
     ['menu_showcreatetime', '话题列表显示创建时间', '话题列表显示创建时间', true],
     ['menu_viewstotime', '将浏览量替换为创建时间', '将浏览量替换为创建时间', false],
@@ -556,9 +557,22 @@
     $('head').append(`<style>.header-title{display:none!important}</style>`);
   }
 
+  // 新话题提醒
+  function menu_newtopicreminder() {
+    if (!menu_value('menu_newtopicreminder')) return;
+    if ($('#list-area .show-more').length > 0) {
+      $('head title').html("【有新话题赶紧来水！！】");
+    }
+  }
+  setInterval(() => {
+    menu_newtopicreminder();
+  }, 1000);
+
   // 定义一个正则表达式来匹配域名结尾
   function isDomainEnding(str) {
-    var domainPattern = /\.(com|org|net|edu|gov|co|cn|io|info|biz|me|us|uk|au|de|fr|jp|ru|ch|it|nl|se|no|es|mil|int|arpa|asia|museum|name|pro|coop|aero|cat|jobs|mobi|travel|xxx|idv|tv|cc|ws|bz|nu|tk|fm|ag|am|at|be|bg|cd|cf|cg|ch|cl|cm|cz|dk|dm|ec|ee|es|eu|fi|ga|gd|gf|gg|gl|gp|gr|hm|hr|ht|hu|im|io|is|je|ke|kg|ki|kr|kz|la|lc|li|lt|lu|lv|ma|mc|md|ms|mt|mu|mx|my|nf|ng|nl|no|nz|pa|pe|pf|pg|pl|pm|pn|pr|pt|pw|re|ro|rs|sa|sb|sc|sg|sh|si|sk|sm|sn|so|st|su|sx|tc|tf|tk|tl|tm|to|tr|tt|tw|ua|ug|uy|uz|vc|ve|vg|vn|vu|wf|yt|za|zm|zw)$/i;
+    // 去掉字符串末尾的 `/`
+    str = str.replace(/\/+$/, '');
+    var domainPattern = /\.(com|org|net|edu|gov|co|cn|io|info|biz|me|us|uk|au|de|fr|jp|ru|ch|it|nl|se|no|es|mil|int|arpa|asia|museum|name|pro|coop|aero|cat|jobs|mobi|travel|xxx|idv|tv|cc|ws|bz|nu|tk|fm|ag|am|at|be|bg|cd|cf|cg|ch|cl|cm|cz|dk|dm|ec|ee|es|eu|fi|ga|gd|gf|gg|gl|gp|gr|hm|hr|ht|hu|im|io|is|je|ke|kg|ki|kr|kz|la|lc|li|lt|lu|lv|ma|mc|md|ms|mt|mu|mx|my|nf|ng|nl|no|nz|pa|pe|pf|pg|pl|pm|pn|pr|pt|pw|re|ro|rs|sa|sb|sc|sg|sh|si|sk|sm|sn|so|st|su|sx|tc|tf|tk|tl|tm|to|tr|tt|tw|ua|ug|uy|uz|vc|ve|vg|vn|vu|wf|xyz|yt|za|zm|zw)$/i;
     return domainPattern.test(str);
   }
   // 默认运行脚本
