@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.23
-// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖，新话题提醒（标签页保持在/new）等，功能持续更新，欢迎提出。
+// @version      0.0.25
+// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖，新话题提醒（标签页保持在/new）等，话题预览功能，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
 // @grant        GM_xmlhttpRequest
@@ -30,10 +30,12 @@
     ['menu_hidereplytail', '隐藏跟帖小尾巴签名', '隐藏跟帖小尾巴签名', false],
     ['menu_showchattime', '显示聊天频道时间', '显示聊天频道时间', false],
     ['menu_hidetopicdetailtitle', '隐藏话题详情顶部大标题', '隐藏话题详情顶部大标题', false],
+    ['menu_topicpreview', '话题预览功能', '话题预览功能', false],
     ['menu_createreply', '快捷创建回复', '快捷创建回复', true],
     ['menu_blockuserlist', '屏蔽指定用户', '屏蔽指定用户', true],
     ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', true],
   ];
+
   var menu_ID = [];
   for (let i = 0; i < menu_ALL.length; i++) { // 如果读取到的值为 null 就写入默认值
     if (GM_getValue(menu_ALL[i][0]) == null) {
@@ -515,34 +517,32 @@
     setInterval(() => {
       if ($('.createreply').length < 1) {
         $('.timeline-container .topic-timeline').append(`<div class="createreply" style="margin-top:4rem;"></div>`)
+        linuxdo_customquickreply.forEach(function (item) {
+          var $li = $('<button class="btn btn-default create reply-to-post no-text btn-icon" type="button"></button>').text(item);
+          $('.createreply').append($li);
+        });
 
-        setTimeout(() => {
-          linuxdo_customquickreply.forEach(function (item) {
-            var $li = $('<button class="btn btn-default create reply-to-post no-text btn-icon" type="button"></button>').text(item);
-            $('.createreply').append($li);
-          });
+        $('.createreply button').click(function () {
+          if ($('.timeline-footer-controls button.create').length != 0) {
+            $('.timeline-footer-controls button.create')[0].click();
+          }
+          if ($('#topic-footer-buttons .topic-footer-main-buttons button.create').length != 0) {
+            $('#topic-footer-buttons .topic-footer-main-buttons button.create')[0].click();
+          }
 
-          $('.createreply button').click(function () {
-            if ($('.timeline-footer-controls button.create').length != 0) {
-              $('.timeline-footer-controls button.create')[0].click();
-            }
-            if ($('#topic-footer-buttons .topic-footer-main-buttons button.create').length != 0) {
-              $('#topic-footer-buttons .topic-footer-main-buttons button.create')[0].click();
-            }
+          setTimeout(() => {
+            let $textarea = $('.d-editor-textarea-wrapper textarea');
+            let text = $(this).html();
 
-            setTimeout(() => {
-              let $textarea = $('.d-editor-textarea-wrapper textarea');
-              let text = $(this).html();
-
-              simulateInput($textarea, text);
-            }, 1000);
-          })
-        }, 1000);
-
+            simulateInput($textarea, text);
+          }, 1000);
+        })
       }
     }, 1000);
   }
-  menu_createreply();
+  setTimeout(() => {
+    menu_createreply();
+  }, 1000);
 
   // 自动展开回复
   function menu_autoexpandreply() {
@@ -569,6 +569,62 @@
   }
   setInterval(() => {
     menu_newtopicreminder();
+  }, 1000);
+
+  function paramsUrl() {
+    var currentUrl = window.location.href;
+    var url = new URL(currentUrl);
+    var params = new URLSearchParams(url.search);
+    if (params.has('type')) {
+      console.log(params.get('type'));
+      $('body').addClass('body-preview');
+    }
+  }
+  // 话题预览功能
+  function menu_topicpreview() {
+    if (!menu_value('menu_topicpreview')) return;
+    paramsUrl();
+
+    $('head').prepend(`<style>
+.topicpreview-btn{padding:4px 12px!important;font-size:14px!important;opacity:0!important}
+.topic-list-item:hover .topicpreview-btn{opacity:1!important;}
+
+.topicpreview{position:fixed;top:0;left:0;z-index:99999;width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;display:none;}
+.topicpreview-opacity{position:absolute;top:0;left:0;width:100%;height:100%;opacity:1;background:rgba(0,0,0,.6);z-index:9;}
+.topicpreview iframe{outline:none;width:100%;max-width:1000px;height:80vh;z-index:10;background:#eee;position:absolute;left:50%;top:50%;transform:translate(-50%, -50%);background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHN0eWxlPSItLWFuaW1hdGlvbi1zdGF0ZTogcnVubmluZzsiPgogICAgICA8c3R5bGU+CiAgICAgICAgOnJvb3QgewogICAgICAgICAgLS1hbmltYXRpb24tc3RhdGU6IHBhdXNlZDsKICAgICAgICB9CgogICAgICAgIC8qIHVzZXIgcGlja2VkIGEgdGhlbWUgd2hlcmUgdGhlICJyZWd1bGFyIiBzY2hlbWUgaXMgZGFyayAqLwogICAgICAgIC8qIHVzZXIgcGlja2VkIGEgdGhlbWUgYSBsaWdodCBzY2hlbWUgYW5kIGFsc28gZW5hYmxlZCBhIGRhcmsgc2NoZW1lICovCgogICAgICAgIC8qIGRlYWwgd2l0aCBsaWdodCBzY2hlbWUgZmlyc3QgKi8KICAgICAgICBAbWVkaWEgKHByZWZlcnMtY29sb3Itc2NoZW1lOiBsaWdodCkgewogICAgICAgICAgOnJvb3QgewogICAgICAgICAgICAtLXByaW1hcnk6ICMyMjIyMjI7CiAgICAgICAgICAgIC0tc2Vjb25kYXJ5OiAjZmZmZmZmOwogICAgICAgICAgICAtLXRlcnRpYXJ5OiAjMDA4OGNjOwogICAgICAgICAgICAtLXF1YXRlcm5hcnk6ICNlNDU3MzU7CiAgICAgICAgICAgIC0taGlnaGxpZ2h0OiAjZmZmZjRkOwogICAgICAgICAgICAtLXN1Y2Nlc3M6ICMwMDk5MDA7CiAgICAgICAgICB9CiAgICAgICAgfQoKICAgICAgICAvKiB0aGVuIGRlYWwgd2l0aCBkYXJrIHNjaGVtZSAqLwogICAgICAgIEBtZWRpYSAocHJlZmVycy1jb2xvci1zY2hlbWU6IGRhcmspIHsKICAgICAgICAgIDpyb290IHsKICAgICAgICAgICAgLS1wcmltYXJ5OiAjZGRkZGRkOwogICAgICAgICAgICAtLXNlY29uZGFyeTogIzIyMjIyMjsKICAgICAgICAgICAgLS10ZXJ0aWFyeTogIzA5OWRkNzsKICAgICAgICAgICAgLS1xdWF0ZXJuYXJ5OiAjYzE0OTI0OwogICAgICAgICAgICAtLWhpZ2hsaWdodDogI2E4NzEzNzsKICAgICAgICAgICAgLS1zdWNjZXNzOiAjMWNhNTUxOwogICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgLyogdGhlc2Ugc3R5bGVzIG5lZWQgdG8gbGl2ZSBoZXJlIGJlY2F1c2UgdGhlIFNWRyBoYXMgYSBkaWZmZXJlbnQgc2NvcGUgKi8KICAgICAgICAuZG90cyB7CiAgICAgICAgICBhbmltYXRpb24tbmFtZTogbG9hZGVyOwogICAgICAgICAgYW5pbWF0aW9uLXRpbWluZy1mdW5jdGlvbjogZWFzZS1pbi1vdXQ7CiAgICAgICAgICBhbmltYXRpb24tZHVyYXRpb246IDNzOwogICAgICAgICAgYW5pbWF0aW9uLWl0ZXJhdGlvbi1jb3VudDogaW5maW5pdGU7CiAgICAgICAgICBhbmltYXRpb24tcGxheS1zdGF0ZTogdmFyKC0tYW5pbWF0aW9uLXN0YXRlKTsKICAgICAgICAgIHN0cm9rZTogI2ZmZjsKICAgICAgICAgIHN0cm9rZS13aWR0aDogMC41cHg7CiAgICAgICAgICB0cmFuc2Zvcm0tb3JpZ2luOiBjZW50ZXI7CiAgICAgICAgICBvcGFjaXR5OiAwOwogICAgICAgICAgcjogbWF4KDF2dywgMTFweCk7CiAgICAgICAgICBjeTogNTAlOwogICAgICAgICAgZmlsdGVyOiBzYXR1cmF0ZSgyKSBvcGFjaXR5KDAuODUpOwogICAgICAgIH0KCiAgICAgICAgLmRvdHM6Zmlyc3QtY2hpbGQgewogICAgICAgICAgZmlsbDogdmFyKC0tcXVhdGVybmFyeSk7CiAgICAgICAgfQoKICAgICAgICAuZG90czpudGgtY2hpbGQoMikgewogICAgICAgICAgZmlsbDogdmFyKC0tcXVhdGVybmFyeSk7CiAgICAgICAgICBhbmltYXRpb24tZGVsYXk6IDAuMTVzOwogICAgICAgIH0KCiAgICAgICAgLmRvdHM6bnRoLWNoaWxkKDMpIHsKICAgICAgICAgIGZpbGw6IHZhcigtLWhpZ2hsaWdodCk7CiAgICAgICAgICBhbmltYXRpb24tZGVsYXk6IDAuM3M7CiAgICAgICAgfQoKICAgICAgICAuZG90czpudGgtY2hpbGQoNCkgewogICAgICAgICAgZmlsbDogdmFyKC0tdGVydGlhcnkpOwogICAgICAgICAgYW5pbWF0aW9uLWRlbGF5OiAwLjQ1czsKICAgICAgICB9CgogICAgICAgIC5kb3RzOm50aC1jaGlsZCg1KSB7CiAgICAgICAgICBmaWxsOiB2YXIoLS10ZXJ0aWFyeSk7CiAgICAgICAgICBhbmltYXRpb24tZGVsYXk6IDAuNnM7CiAgICAgICAgfQoKICAgICAgICBAa2V5ZnJhbWVzIGxvYWRlciB7CiAgICAgICAgICAwJSB7CiAgICAgICAgICAgIG9wYWNpdHk6IDA7CiAgICAgICAgICAgIHRyYW5zZm9ybTogc2NhbGUoMSk7CiAgICAgICAgICB9CiAgICAgICAgICA0NSUgewogICAgICAgICAgICBvcGFjaXR5OiAxOwogICAgICAgICAgICB0cmFuc2Zvcm06IHNjYWxlKDAuNyk7CiAgICAgICAgICB9CiAgICAgICAgICA2NSUgewogICAgICAgICAgICBvcGFjaXR5OiAxOwogICAgICAgICAgICB0cmFuc2Zvcm06IHNjYWxlKDAuNyk7CiAgICAgICAgICB9CiAgICAgICAgICAxMDAlIHsKICAgICAgICAgICAgb3BhY2l0eTogMDsKICAgICAgICAgICAgdHJhbnNmb3JtOiBzY2FsZSgxKTsKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIDwvc3R5bGU+CgogICAgICA8ZyBjbGFzcz0iY29udGFpbmVyIj4KICAgICAgICA8Y2lyY2xlIGNsYXNzPSJkb3RzIiBjeD0iMzB2dyIvPgogICAgICAgIDxjaXJjbGUgY2xhc3M9ImRvdHMiIGN4PSI0MHZ3Ii8+CiAgICAgICAgPGNpcmNsZSBjbGFzcz0iZG90cyIgY3g9IjUwdnciLz4KICAgICAgICA8Y2lyY2xlIGNsYXNzPSJkb3RzIiBjeD0iNjB2dyIvPgogICAgICAgIDxjaXJjbGUgY2xhc3M9ImRvdHMiIGN4PSI3MHZ3Ii8+CiAgICAgIDwvZz4KICAgIDwvc3ZnPg==)}
+
+.body-preview .sidebar-wrapper{display:none!important;}
+body.body-preview #main-outlet-wrapper{display:block!important;padding-left:50px!important;}
+.body-preview .d-header-wrap{display:none !important}
+.body-preview .menu_suspendedball{display:none!important}
+      </style>`)
+
+    if ($('.topicpreview').length < 1) {
+      $('body').append('<div class="topicpreview"><div class="topicpreview-opacity"></div><iframe src></iframe></div>');
+    }
+
+    $('.topic-list .main-link a.title').each(function () {
+      const id = $(this).attr('href');
+      if ($(this).parents('.link-top-line').find('.topicpreview-btn').length < 1) {
+        $(this).parents('.link-top-line').append(`<button class="btn btn-icon-text btn-default topicpreview-btn" data-id="${id}">预览</button>`);
+      }
+    })
+
+    // 打开预览
+    $('.topicpreview-btn').click(function () {
+      $('.topicpreview').show();
+      const url = $(this).attr('data-id') + "?type=preview";
+      $('.topicpreview iframe').attr('src', url);
+    })
+
+    // 关闭弹窗
+    $('.topicpreview-opacity').click(function () {
+      $('.topicpreview').hide();
+      $('.topicpreview iframe').attr('src', "");
+    })
+  }
+  setInterval(() => {
+    menu_topicpreview(); // 话题预览功能
   }, 1000);
 
   // 定义一个正则表达式来匹配域名结尾
@@ -605,7 +661,7 @@
   runscripts();
 
   $(function () {
-    $('head').append(`<style>
+    $('head').append(`<style>      
 .linuxlevel.four{background:linear-gradient(to right, red, blue);-webkit-background-clip:text;color:transparent;}
 
 .topic-post{position:relative;}
@@ -635,7 +691,7 @@
 #floorlotterloading img{width:50px;height:50px}
 .floorlotterywrap{display:none;width:400px;height:300px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;z-index:999}
 .floorlotterywrap{width:400px;height:300px}
-        </>`)
+    <style/>`)
 
     // 帖子列表
     let pollinglength1 = 0;
