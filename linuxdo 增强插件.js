@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.25
-// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖，新话题提醒（标签页保持在/new）等，话题预览功能，功能持续更新，欢迎提出。
+// @version      0.0.26
+// @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖，新话题提醒（标签页保持在/new）等，话题预览功能，自动滚动阅读，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
 // @grant        GM_xmlhttpRequest
@@ -31,6 +31,7 @@
     ['menu_showchattime', '显示聊天频道时间', '显示聊天频道时间', false],
     ['menu_hidetopicdetailtitle', '隐藏话题详情顶部大标题', '隐藏话题详情顶部大标题', false],
     ['menu_topicpreview', '话题预览功能', '话题预览功能', false],
+    ['menu_autoread', '自动滚动阅读', '自动滚动阅读', true],
     ['menu_createreply', '快捷创建回复', '快捷创建回复', true],
     ['menu_blockuserlist', '屏蔽指定用户', '屏蔽指定用户', true],
     ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', true],
@@ -423,6 +424,7 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       });
+
       // 初始化
       function init() {
         // 屏蔽用户
@@ -570,6 +572,54 @@
   setInterval(() => {
     menu_newtopicreminder();
   }, 1000);
+
+  // 自动滚动阅读
+  function menu_autoread() {
+    if (!menu_value('menu_autoread')) return;
+    $('body').append(`<div class="autoread" title="自动阅读"><svg xmlns="http://www.w3.org/2000/svg"  width="24"  height="24" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12.088 4.82a10 10 0 0 1 9.412 .314a1 1 0 0 1 .493 .748l.007 .118v13a1 1 0 0 1 -1.5 .866a8 8 0 0 0 -8 0a1 1 0 0 1 -1 0a8 8 0 0 0 -7.733 -.148l-.327 .18l-.103 .044l-.049 .016l-.11 .026l-.061 .01l-.117 .006h-.042l-.11 -.012l-.077 -.014l-.108 -.032l-.126 -.056l-.095 -.056l-.089 -.067l-.06 -.056l-.073 -.082l-.064 -.089l-.022 -.036l-.032 -.06l-.044 -.103l-.016 -.049l-.026 -.11l-.01 -.061l-.004 -.049l-.002 -.068v-13a1 1 0 0 1 .5 -.866a10 10 0 0 1 9.412 -.314l.088 .044l.088 -.044z" /></svg></div>`)
+    $('head').append(`<style>
+.autoread{z-index:99;position:fixed;bottom:80px;right:20px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d1f0ff;color:#999;font-size:22px;cursor:pointer}
+      </style>`)
+
+
+    let isScrolling = false; // 用于跟踪滚动状态
+    let scrollInterval = null;
+
+    function scrollToBottomSlowly(
+      distancePerStep = 10,
+      delayPerStep = 50
+    ) {
+      if (scrollInterval !== null) {
+        clearInterval(scrollInterval);
+      }
+      scrollInterval = setInterval(() => {
+        // 获取当前页面的高度
+        const documentHeight = document.body.scrollHeight;
+        const windowHeight = window.innerHeight;
+        const scrollPosition = window.scrollY;
+
+        // 检查是否已经到达页面底部
+        if (scrollPosition + windowHeight >= documentHeight - 1) {
+          clearInterval(scrollInterval);
+          scrollInterval = null;
+        } else {
+          window.scrollBy(0, distancePerStep);
+        }
+      }, delayPerStep);
+    }
+
+    $('.autoread').click(function () {
+      if (isScrolling) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+        isScrolling = false; // 停止滚动，更新状态
+      } else {
+        scrollToBottomSlowly();
+        isScrolling = true; // 开始滚动，更新状态
+      }
+    })
+  }
+  menu_autoread();
 
   function paramsUrl() {
     var currentUrl = window.location.href;
