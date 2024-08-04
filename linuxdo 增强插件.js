@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo 增强插件
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.26
+// @version      0.0.27
 // @description  linux.do 多功能脚本，显示创建时间或将浏览器替换为时间，显示楼层数，隐藏签名尾巴，新标签页打开话题，强制 block（拉黑屏蔽） 某人的话题，话题快捷回复（支持自定义），优化签名图显示防止图裂，功能设置面板导入导出，楼层抽奖，新话题提醒（标签页保持在/new）等，话题预览功能，自动滚动阅读，功能持续更新，欢迎提出。
 // @author       dlzmoe
 // @match        *://*.linux.do/*
@@ -36,7 +36,7 @@
     ['menu_blockuserlist', '屏蔽指定用户', '屏蔽指定用户', true],
     ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', true],
   ];
-
+ 
   var menu_ID = [];
   for (let i = 0; i < menu_ALL.length; i++) { // 如果读取到的值为 null 就写入默认值
     if (GM_getValue(menu_ALL[i][0]) == null) {
@@ -243,7 +243,7 @@
       $('.topic-post').each(function () {
         const num = $(this).find('article').attr('id').replace(/^post_/, '');
         if ($(this).find('.linuxfloor').length < 1) {
-          $(this).find('.topic-avatar').append(`<span class="linuxfloor">#${num}</span>`)
+          $(this).find('.post-infos').append(`<span class="linuxfloor">#${num}</span>`)
         }
       })
     }, 1000);
@@ -274,7 +274,7 @@
     setTimeout(() => {
       $('body').append(`<div class="menu_suspendedball">
         <div class="opendialog"><svg class="fa d-icon d-icon-cog svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#cog"></use></svg></div>
-        <div id="menu_suspendedball">
+        <dialog open id="menu_suspendedball">
           <div class="title">设置</div><div class="close">+</div>
           <p class="hint">请注意，该设置面板数据全部保存在本地浏览器缓存中，注意备份。</p>
           <div class="item">
@@ -293,7 +293,7 @@
             <input type="file" id="fileInput" style="display:none;" accept=".json">
             <button class="btn export">导出</button>
           </div>
-        </div>
+        </dialog>
       </div>
       
       <dialog open class="floorlotterywrap">
@@ -715,7 +715,7 @@ body.body-preview #main-outlet-wrapper{display:block!important;padding-left:50px
 .linuxlevel.four{background:linear-gradient(to right, red, blue);-webkit-background-clip:text;color:transparent;}
 
 .topic-post{position:relative;}
-.linuxfloor{display:flex;position:absolute;left:-28px;top:0px;color:#96aed0;width:30px;height:30px;align-items:center;justify-content:center;border-radius:6px;font-size:16px}
+.linuxfloor{display:flex;color:#ff8383;width:30px;height:30px;align-items:center;justify-content:center;border-radius:6px;font-size:16px;margin-left:10px;}
 .signature-p{color:#279a36;font-size:14px;word-break:break-word;}
 .topic-list .views{font-weight:400!important;white-space:nowrap!important;}
 .createreply{display:flex;flex-direction:column;max-width:300px;}
