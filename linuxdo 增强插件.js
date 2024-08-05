@@ -36,7 +36,6 @@
     ['menu_blockuserlist', '屏蔽指定用户', '屏蔽指定用户', true],
     ['menu_suspendedball', '功能悬浮球（显示与否不影响设置功能运行）', '功能悬浮球（显示与否不影响设置功能运行）', true],
   ];
- 
   var menu_ID = [];
   for (let i = 0; i < menu_ALL.length; i++) { // 如果读取到的值为 null 就写入默认值
     if (GM_getValue(menu_ALL[i][0]) == null) {
