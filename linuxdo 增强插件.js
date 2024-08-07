@@ -535,6 +535,10 @@
             let $textarea = $('.d-editor-textarea-wrapper textarea');
             let text = $(this).html();
 
+            const randomNum = Math.floor(Math.random() * 10) + 1;
+            for (let i = 0; i < randomNum; i++) {
+                text = '<p>' + text + '</p>';
+            }
             simulateInput($textarea, text);
           }, 1000);
         })
