@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         v2ex AI 总结帖子
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.1
+// @version      0.0.4
 // @description  自定义 api key 等信息，实现 AI 总结帖子，会保留缓存记录到本地避免大量消耗 token。
 // @author       dlzmoe
 // @match        *://v2ex.com/*
@@ -144,10 +144,13 @@
     } else {
       // 自动总结
       $('.aisummary').hide();
-      getPostContent();
+      // getPostContent();
     }
   }
-  menu_ManualSummary();
+
+  if (window.location.pathname.indexOf('/t/') > -1) {
+    menu_ManualSummary();
+  }
 
   // 获取帖子内容
   function getPostContent() {
@@ -215,8 +218,8 @@ ${topic_contentdata}`;
 
   // 先判断是否有缓存
   function isCache() {
-    $(".header").after(`<button type="button" class="aisummary">AI总结</button>`);
-    $(".header").after(
+    $("#Main .box>.header").after(`<button type="button" class="aisummary">AI总结</button>`);
+    $("#Main .box>.header").after(
       `<div class="gpt-summary-wrap">
        <div class="gpt-summary">AI 总结：正在使用 AI 总结内容中，请稍后...</div>
        <button type="button" class="airegenerate" style="display:none">重新生成</button>
@@ -236,6 +239,7 @@ ${topic_contentdata}`;
 
     } else {
       $('.gpt-summary-wrap').hide();
+      getPostContent();
     }
 
     $('.airegenerate').click(() => {
