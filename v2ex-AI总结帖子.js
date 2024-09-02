@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         v2ex AI 总结帖子
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.0.4
+// @version      0.0.5
 // @description  自定义 api key 等信息，实现 AI 总结帖子，会保留缓存记录到本地避免大量消耗 token。
 // @author       dlzmoe
 // @match        *://v2ex.com/*
@@ -239,7 +239,10 @@ ${topic_contentdata}`;
 
     } else {
       $('.gpt-summary-wrap').hide();
-      getPostContent();
+
+      if (!menu_value('menu_ManualSummary')) {
+        getPostContent();
+      }
     }
 
     $('.airegenerate').click(() => {
