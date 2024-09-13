@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name        follow 网页版汉化插件
-// @namespace   由于官方不支持中文，汉化大部分的翻译
+// @name        Follow 网页版汉化插件
+// @namespace   https://github.com/dlzmoe/scripts
+// @version     0.0.1
+// @description 由于官方不支持中文，汉化大部分的翻译（正在开发中，欢迎更正中文！）
 // @match       *://app.follow.is/*
 // @grant       none
 // @license     MIT
 // @icon        https://app.follow.is/favicon.ico
-// @version     1.0
 // @author      dlzmoe
 // ==/UserScript==
 
@@ -83,18 +84,6 @@ const zh_Hans = [
 	['Dark', '黑夜'],
 	['Unread count', '未读数'],
 	['Show in sidebar', '在侧边栏显示'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
-	['xxxxxx', 'xxxxxx'],
 ];
 
 class ReplaceText {
