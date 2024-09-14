@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Follow 网页版汉化插件
 // @namespace   https://github.com/dlzmoe/scripts
-// @version     0.0.1
+// @version     0.0.2
 // @description 由于官方不支持中文，汉化大部分的翻译（正在开发中，欢迎更正中文！）
 // @match       *://app.follow.is/*
 // @grant       none
@@ -84,6 +84,22 @@ const zh_Hans = [
 	['Dark', '黑夜'],
 	['Unread count', '未读数'],
 	['Show in sidebar', '在侧边栏显示'],
+	['Edit feed', '编辑订阅'],
+	['Edit Feed', '编辑订阅'],
+	['Unfollow feed', '取消订阅'],
+	['Claim Feed', '声明所有权'],
+	['Copy Entry ID', '复制文章id'],
+	['Edit', '编辑'],
+	['Unfollow', '取消订阅'],
+	['Navigate to feed', '导航至 Feed'],
+	['Claim', '声明'],
+	['Mark all as read', '全部标记为已读'],
+	['Open feed in browser', '在浏览器中打开Feed'],
+	['Open site in browser', '在浏览器中打开网站'],
+	['Load archived entries', '加载存档条目'],
+	['Category', '分类'],
+	['Private Follow', '私人订阅'],
+	['Tile', '标题'],
 ];
 
 class ReplaceText {
