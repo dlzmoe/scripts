@@ -8,12 +8,6 @@ https://github.com/dlzmoe/scripts
 
 ---
 
-## Follow 网页版汉化插件
-
-https://greasyfork.org/scripts/508247
-
-由于官方不支持中文，汉化大部分的翻译（正在开发中，欢迎更正中文！）
-
 ## linuxdo 增强插件
 
 https://greasyfork.org/scripts/501827
