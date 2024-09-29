@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         导出微信公众号文章为PDF
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.3
+// @version      0.5
 // @author       dlzmoe
-// @description  在微信公众号文章页面中添加按钮，点击后导出文章为PDF格式。
+// @description  在微信公众号文章页面中添加按钮，点击后导出文章为PDF格式，并显示标题、作者和时间等元信息。
 // @match        https://mp.weixin.qq.com/s/*
 // @grant        none
 // @license      MIT
@@ -55,11 +55,47 @@
     isExporting = true; // 设置为正在导出
     startLoading(); // 启动加载动画
 
-    // 获取文章内容和标题
+    // 获取文章内容和标题、作者、时间等元信息
     var article = document.querySelector('.rich_media_content');
     var title = document.querySelector('.rich_media_title');
+    var author = document.querySelector('.weui-wa-hotarea'); // 文章作者
+    var publishTime = document.querySelector('#publish_time'); // 文章时间
 
     if (article) {
+      // 创建一个容器用于添加元信息
+      var metaInfoDiv = document.createElement('div');
+      metaInfoDiv.style.marginBottom = '20px';
+      metaInfoDiv.style.borderBottom = '1px solid #eee';
+      metaInfoDiv.style.paddingBottom = '15px';
+
+      // 标题
+      var titleElement = document.createElement('h1');
+      titleElement.innerText = title ? title.innerText.trim() : '未命名文章';
+      titleElement.style.fontSize = '24px';
+      titleElement.style.marginBottom = '10px';
+      metaInfoDiv.appendChild(titleElement);
+
+      // 作者
+      if (author) {
+        var authorElement = document.createElement('p');
+        authorElement.innerText = '作者: ' + author.innerText.trim();
+        authorElement.style.fontSize = '14px';
+        authorElement.style.margin = '5px 0';
+        metaInfoDiv.appendChild(authorElement);
+      }
+
+      // 时间
+      if (publishTime) {
+        var timeElement = document.createElement('p');
+        timeElement.innerText = '发布时间: ' + publishTime.innerText.trim();
+        timeElement.style.fontSize = '14px';
+        timeElement.style.margin = '5px 0';
+        metaInfoDiv.appendChild(timeElement);
+      }
+
+      // 将元信息插入到文章内容的顶部
+      article.insertBefore(metaInfoDiv, article.firstChild);
+
       // 添加防止图片分页的CSS样式
       var style = document.createElement('style');
       style.innerHTML = `
