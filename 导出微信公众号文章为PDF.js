@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         导出微信公众号文章为PDF
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.1
+// @version      0.2
 // @author       dlzmoe
 // @description  在微信公众号文章页面中添加按钮，点击后导出文章为PDF格式。
 // @match        https://mp.weixin.qq.com/s/*
@@ -60,6 +60,22 @@
     var title = document.querySelector('.rich_media_title');
 
     if (article) {
+      // 添加防止图片分页的CSS样式
+      var style = document.createElement('style');
+      style.innerHTML = `
+        .rich_media_content img {
+          page-break-inside: avoid;
+          break-inside: avoid;
+          max-width: 100%;
+          height: auto;
+        }
+        .rich_media_content p, .rich_media_content div {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+      `;
+      document.head.appendChild(style);
+
       // 确保所有图片加载完成
       let images = article.querySelectorAll('img');
       let imagePromises = [];
@@ -82,7 +98,7 @@
               canvas.height = imgElement.height;
               var ctx = canvas.getContext('2d');
               ctx.drawImage(imgElement, 0, 0);
-              img.src = canvas.toDataURL('image/png'); // 替换图片为base64
+              img.src = canvas.toDataURL('image/jpeg', 0.7); // 使用JPEG格式并压缩质量到70%
               resolve();
             };
             imgElement.onerror = resolve; // 即使图片加载失败，继续处理
@@ -100,16 +116,22 @@
           filename: fileName,
           image: {
             type: 'jpeg',
-            quality: 0.98
+            quality: 0.7 // 降低图片质量以减小PDF体积
           },
           html2canvas: {
-            scale: 2
+            scale: 1.5, // 降低渲染比例以减小PDF体积
+            useCORS: true, // 允许跨域图片
+            logging: false, // 关闭日志
+            // 可以根据需要添加其他html2canvas选项
           },
           jsPDF: {
             unit: 'in',
-            format: 'letter',
+            format: 'a4', // 使用A4格式，比letter更常用且体积可能更小
             orientation: 'portrait'
-          }
+          },
+          pagebreak: {
+            mode: ['avoid-all', 'css', 'legacy']
+          } // 遵循CSS中的page-break规则
         };
 
         // 使用 html2pdf 将文章内容导出为 PDF
@@ -122,6 +144,10 @@
           stopLoading(); // 即使出现错误也恢复按钮状态
           isExporting = false; // 重置导出状态
         });
+      }).catch(function (error) {
+        alert('处理图片时出现问题: ' + error.message);
+        stopLoading(); // 即使出现错误也恢复按钮状态
+        isExporting = false; // 重置导出状态
       });
     } else {
       alert('未找到文章内容');
