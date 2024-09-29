@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         导出微信公众号文章为PDF
 // @namespace    https://github.com/dlzmoe/scripts
-// @version      0.2
+// @version      0.3
 // @author       dlzmoe
 // @description  在微信公众号文章页面中添加按钮，点击后导出文章为PDF格式。
 // @match        https://mp.weixin.qq.com/s/*
@@ -98,7 +98,7 @@
               canvas.height = imgElement.height;
               var ctx = canvas.getContext('2d');
               ctx.drawImage(imgElement, 0, 0);
-              img.src = canvas.toDataURL('image/jpeg', 0.7); // 使用JPEG格式并压缩质量到70%
+              img.src = canvas.toDataURL('image/jpeg'); // 使用JPEG格式并压缩质量到70%
               resolve();
             };
             imgElement.onerror = resolve; // 即使图片加载失败，继续处理
@@ -116,7 +116,7 @@
           filename: fileName,
           image: {
             type: 'jpeg',
-            quality: 0.7 // 降低图片质量以减小PDF体积
+            quality: 1 // 降低图片质量以减小PDF体积
           },
           html2canvas: {
             scale: 1.5, // 降低渲染比例以减小PDF体积
