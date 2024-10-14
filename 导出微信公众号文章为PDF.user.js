@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         导出微信公众号文章为PDF
+// @name         导出微信公众号文章为 PDF
 // @namespace    https://github.com/dlzmoe/scripts
 // @version      0.5
 // @author       dlzmoe
-// @description  在微信公众号文章页面中添加按钮，点击后导出文章为PDF格式，并显示标题、作者和时间等元信息。
+// @description  在微信公众号文章页面中添加按钮，点击后导出文章为 PDF 格式，并显示标题、作者和时间等元信息。
 // @match        https://mp.weixin.qq.com/s/*
 // @grant        none
-// @license      MIT
+// @license      Apache-2.0 license
 // @require      https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js
 // ==/UserScript==
 
@@ -15,7 +15,7 @@
 
   // 创建一个按钮
   var button = document.createElement('button');
-  button.innerHTML = '导出为PDF';
+  button.innerHTML = '导出为 PDF';
   button.style.position = 'fixed';
   button.style.top = '10px';
   button.style.right = '10px';
@@ -43,10 +43,10 @@
   function stopLoading() {
     button.disabled = false; // 启用按钮
     button.style.backgroundColor = '#4CAF50'; // 恢复原始颜色
-    button.innerHTML = '导出为PDF'; // 恢复按钮文本
+    button.innerHTML = '导出为 PDF'; // 恢复按钮文本
   }
 
-  // 点击按钮时执行导出PDF的操作
+  // 点击按钮时执行导出 PDF 的操作
   button.addEventListener('click', function () {
     if (isExporting) {
       return; // 如果已经在导出过程中，则不允许再次点击
@@ -78,7 +78,7 @@
       // 作者
       if (author) {
         var authorElement = document.createElement('p');
-        authorElement.innerText = '作者: ' + author.innerText.trim();
+        authorElement.innerText = '作者：' + author.innerText.trim();
         authorElement.style.fontSize = '14px';
         authorElement.style.margin = '5px 0';
         metaInfoDiv.appendChild(authorElement);
@@ -87,7 +87,7 @@
       // 时间
       if (publishTime) {
         var timeElement = document.createElement('p');
-        timeElement.innerText = '发布时间: ' + publishTime.innerText.trim();
+        timeElement.innerText = '发布时间：' + publishTime.innerText.trim();
         timeElement.style.fontSize = '14px';
         timeElement.style.margin = '5px 0';
         metaInfoDiv.appendChild(timeElement);
@@ -96,7 +96,7 @@
       // 将元信息插入到文章内容的顶部
       article.insertBefore(metaInfoDiv, article.firstChild);
 
-      // 添加防止图片分页的CSS样式
+      // 添加防止图片分页的 CSS 样式
       var style = document.createElement('style');
       style.innerHTML = `
         .rich_media_content img {
@@ -134,7 +134,7 @@
               canvas.height = imgElement.height;
               var ctx = canvas.getContext('2d');
               ctx.drawImage(imgElement, 0, 0);
-              img.src = canvas.toDataURL('image/jpeg'); // 使用JPEG格式并压缩质量到70%
+              img.src = canvas.toDataURL('image/jpeg'); // 使用 JPEG 格式并压缩质量到 70%
               resolve();
             };
             imgElement.onerror = resolve; // 即使图片加载失败，继续处理
@@ -142,7 +142,7 @@
         );
       });
 
-      // 确保图片加载完成后再导出PDF
+      // 确保图片加载完成后再导出 PDF
       Promise.all(imagePromises).then(function () {
         // 使用文章标题作为文件名
         var fileName = title ? title.innerText.trim() + '.pdf' : 'WeChat_Article.pdf';
@@ -152,22 +152,22 @@
           filename: fileName,
           image: {
             type: 'jpeg',
-            quality: 1 // 降低图片质量以减小PDF体积
+            quality: 1 // 降低图片质量以减小 PDF 体积
           },
           html2canvas: {
-            scale: 1.5, // 降低渲染比例以减小PDF体积
+            scale: 1.5, // 降低渲染比例以减小 PDF 体积
             useCORS: true, // 允许跨域图片
             logging: false, // 关闭日志
-            // 可以根据需要添加其他html2canvas选项
+            // 可以根据需要添加其他 html2canvas 选项
           },
           jsPDF: {
             unit: 'in',
-            format: 'a4', // 使用A4格式，比letter更常用且体积可能更小
+            format: 'a4', // 使用 A4 格式，比 letter 更常用且体积可能更小
             orientation: 'portrait'
           },
           pagebreak: {
             mode: ['avoid-all', 'css', 'legacy']
-          } // 遵循CSS中的page-break规则
+          } // 遵循 CSS 中的 page-break 规则
         };
 
         // 使用 html2pdf 将文章内容导出为 PDF
@@ -176,12 +176,12 @@
           stopLoading();
           isExporting = false; // 重置导出状态
         }).catch(function (error) {
-          alert('导出过程中出现问题: ' + error.message);
+          alert('导出过程中出现问题：' + error.message);
           stopLoading(); // 即使出现错误也恢复按钮状态
           isExporting = false; // 重置导出状态
         });
       }).catch(function (error) {
-        alert('处理图片时出现问题: ' + error.message);
+        alert('处理图片时出现问题：' + error.message);
         stopLoading(); // 即使出现错误也恢复按钮状态
         isExporting = false; // 重置导出状态
       });

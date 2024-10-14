@@ -34,7 +34,7 @@
 
   // 注册脚本菜单
   function registerMenuCommand() {
-    if (menu_ID.length > menu_ALL.length) { // 如果菜单ID数组多于菜单数组，说明不是首次添加菜单，需要卸载所有脚本菜单
+    if (menu_ID.length > menu_ALL.length) { // 如果菜单 ID 数组多于菜单数组，说明不是首次添加菜单，需要卸载所有脚本菜单
       for (let i = 0; i < menu_ID.length; i++) {
         GM_unregisterMenuCommand(menu_ID[i]);
       }
@@ -218,7 +218,7 @@ ${topic_contentdata}`;
 
   // 先判断是否有缓存
   function isCache() {
-    $("#Main .box>.header").after(`<button type="button" class="aisummary">AI总结</button>`);
+    $("#Main .box>.header").after(`<button type="button" class="aisummary">AI 总结</button>`);
     $("#Main .box>.header").after(
       `<div class="gpt-summary-wrap">
        <div class="gpt-summary">AI 总结：正在使用 AI 总结内容中，请稍后...</div>

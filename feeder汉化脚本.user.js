@@ -5,7 +5,7 @@
 // @author      dlzmoe
 // @description feeder.com 汉化脚本
 // @include     *://feeder.co/*
-// @license     MIT
+// @license     Apache-2.0 license
 // @icon        https://feeder.co/favicon.ico
 // @grant       none
 // ==/UserScript==

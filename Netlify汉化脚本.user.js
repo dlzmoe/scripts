@@ -5,7 +5,7 @@
 // @author      dlzmoe
 // @description 由于官方不支持中文，汉化 Netlify 大部分的翻译
 // @include     *://*.netlify.com/*
-// @license     MIT
+// @license     Apache-2.0 license
 // @icon        https://app.netlify.com/favicon-48x48.png
 // @grant       none
 // @run-at      document-start

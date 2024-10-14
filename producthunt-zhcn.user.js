@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name        Product Hunt 汉化
-// @namespace   由于官方不支持中文，汉化大部分的翻译
+// @namespace   https://github.com/dlzmoe/scripts
+// @description 由于官方不支持中文，汉化大部分的翻译
 // @match       *://*.producthunt.com/*
 // @grant       none
-// @license     MIT
+// @license     Apache-2.0 license
 // @icon        https://app.netlify.com/favicon-48x48.png
 // @version     1.0
-// @author      -
-// @description 2024/3/13 11:29:10
+// @author      dlzmoe
 // ==/UserScript==
 
 const zh_Hans = [
@@ -30,7 +30,7 @@ const zh_Hans = [
   ['TapRefer', '点击参考'],
   ['Latest Stories', '最新故事'],
   ['Discussions', '讨论'],
-  ['Launching soon?', '即将推出?'],
+  ['Launching soon?', '即将推出？'],
   ['Learn everything you need to know about launching on Product Hunt 🚀', '了解有关在 Product Hunt 上发布所需的所有信息 🚀'],
   ['Read the guide', '阅读指南'],
 ];

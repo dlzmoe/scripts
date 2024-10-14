@@ -16,7 +16,7 @@
 // @grant        GM_info
 // @icon         https://www.google.com/chrome/static/images/chrome-logo-m100.svg
 // @grant        none
-// @license      MIT
+// @license      Apache-2.0 license
 // ==/UserScript==
 
 (function () {
@@ -34,7 +34,7 @@
 
   // 注册脚本菜单
   function registerMenuCommand() {
-    if (menu_ID.length > menu_ALL.length) { // 如果菜单ID数组多于菜单数组，说明不是首次添加菜单，需要卸载所有脚本菜单
+    if (menu_ID.length > menu_ALL.length) { // 如果菜单 ID 数组多于菜单数组，说明不是首次添加菜单，需要卸载所有脚本菜单
       for (let i = 0; i < menu_ID.length; i++) {
         GM_unregisterMenuCommand(menu_ID[i]);
       }

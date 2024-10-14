@@ -2,13 +2,13 @@
 // @name         抖音视频下载 - 需进入详情页
 // @namespace    https://github.com/dlzmoe/scripts
 // @version      0.0.1
-// @description  Tampermonkey description
+// @description  在浏览器中打开抖音，实现快速下载视频。
 // @author       dlzmoe
 // @match        https://*.douyin.com/*
 // @icon         https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/favicon.png
 // @require      https://cdn.bootcss.com/jquery/3.6.0/jquery.min.js
 // @grant        none
-// @license      MIT
+// @license      Apache-2.0 license
 // ==/UserScript==
 
 (function () {
