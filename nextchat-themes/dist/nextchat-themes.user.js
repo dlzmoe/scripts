@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nextchat-themes
 // @namespace    https://github.com/dlzmoe/UserScript
-// @version      0.0.1
+// @version      0.0.2
 // @author       dlzmoe
 // @description  NextChat 插件，修改 UI 主题！
 // @license      Apache-2.0
@@ -18,7 +18,7 @@
   'use strict';
 
   const name = "nextchat-themes";
-  const version = "0.0.1";
+  const version = "0.0.2";
   const author = "dlzmoe";
   const description = "NextChat plug-in, modify the UI theme!";
   const type = "module";
