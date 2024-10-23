@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         nextchat-themes
-// @namespace    https://github.com/dlzmoe/nextchat-themes
+// @namespace    https://github.com/dlzmoe/UserScript
 // @version      0.0.1
 // @author       dlzmoe
 // @description  NextChat 插件，修改 UI 主题！
 // @license      Apache-2.0
 // @icon         https://framerusercontent.com/images/tCHbBovHGLAJDNKRG1lKfavenFs.png
 // @match        *://app.nextchat.dev/*
+// @match        *://nextchat.oaipro.com/*
 // @require      https://unpkg.com/vue@3.4.38/dist/vue.global.prod.js
 // @grant        GM_addStyle
 // ==/UserScript==
@@ -16,6 +17,40 @@
 (function (vue) {
   'use strict';
 
+  const name = "nextchat-themes";
+  const version = "0.0.1";
+  const author = "dlzmoe";
+  const description = "NextChat plug-in, modify the UI theme!";
+  const type = "module";
+  const license = "Apache-2.0";
+  const scripts = {
+    dev: "vite --mode development",
+    build: "vite build",
+    preview: "vite preview"
+  };
+  const dependencies = {
+    vue: "^3.4.27",
+    webdav: "^5.7.1"
+  };
+  const devDependencies = {
+    "@vitejs/plugin-vue": "^5.0.4",
+    less: "^4.1.0",
+    "less-loader": "^8.0.0",
+    "style-loader": "^2.0.0",
+    vite: "^5.2.12",
+    "vite-plugin-monkey": "^4.0.0"
+  };
+  const packageJson = {
+    name,
+    version,
+    author,
+    description,
+    type,
+    license,
+    scripts,
+    dependencies,
+    devDependencies
+  };
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -27,7 +62,7 @@
     methods: {},
     created() {
       console.log(
-        `%c NextChat 增强插件 %c 已开启 `,
+        `%c ${packageJson.name} %c 已开启 `,
         "padding: 2px 1px; color: #fff; background: #606060;",
         "padding: 2px 1px; color: #fff; background: #42c02e;"
       );

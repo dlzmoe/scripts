@@ -15,7 +15,10 @@ export default defineConfig({
         namespace: 'https://github.com/dlzmoe/UserScript',
         description: "NextChat 插件，修改 UI 主题！",
         version: pkg.version,
-        match: ['*://app.nextchat.dev/*'],
+        match: [
+          '*://app.nextchat.dev/*',
+          '*://nextchat.oaipro.com/*',
+        ],
       },
       build: {
         externalGlobals: {
