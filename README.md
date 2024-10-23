@@ -23,5 +23,5 @@ https://github.com/dlzmoe/UserScript
 | Netlify 汉化脚本                          | 由于官方不支持中文，汉化 Netlify 大部分的翻译。                                             | [安装](https://greasyfork.org/scripts/484197)                                                       |
 | Notion 增强脚本个性化目录弹窗缩小标题字号 | 修改字体大小，多余的遮罩，个性化目录弹窗，浮动在右侧（目录必须作为第一个块元素）。          | [安装](https://greasyfork.org/scripts/485105)                                                       |
 | 导出微信公众号文章为 PDF                  | 在微信公众号文章页面中添加按钮，点击后导出文章为 PDF 格式，并显示标题、作者和时间等元信息。 | [安装](https://greasyfork.org/scripts/510683)                                                       |
-| 抖音视频下载 - 需进入详情页               | 在浏览器中打开抖音，实现快速下载视频。                                                      | [安装](https://raw.githubusercontent.com/dlzmoe/scripts/refs/heads/main/douyin-download.user.js)    |
-| Product Hunt 汉化                         | 由于官方不支持中文，汉化大部分的翻译。                                                      | [安装](https://raw.githubusercontent.com/dlzmoe/scripts/refs/heads/main/producthunt-zhcn.user.js)   |
+| 抖音视频下载 - 需进入详情页               | 在浏览器中打开抖音，实现快速下载视频。                                                      | [安装](https://raw.githubusercontent.com/dlzmoe/scripts/refs/heads/main/douyin-download/douyin-download.user.js)    |
+| Product Hunt 汉化                         | 由于官方不支持中文，汉化大部分的翻译。                                                      | [安装](https://raw.githubusercontent.com/dlzmoe/scripts/refs/heads/main/producthunt-zhcn/producthunt-zhcn.user.js)   |
