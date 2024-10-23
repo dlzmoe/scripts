@@ -1,10 +1,11 @@
-<p align="center"><img width="100" src="./assets/favicon.png"></p>
+<p align="center"><img src="./assets/github-header-image.png"></p>
 
-<p align="center">自用的油猴脚本。一部分脚本已经发布到 greasyfork.org，一部分在本地未发布。</p>
+<p align="center">自用的 GM 油猴脚本。一部分脚本已经发布到 greasyfork.org，一部分在本地未发布。</p>
 
-https://github.com/dlzmoe/scripts
+https://github.com/dlzmoe/UserScript
 
-[脚本开发模板](./scripts.js)
+- [单文件脚本开发模板](./scripts-template.js)
+- [工程脚本开发模板](./example-scripts/)
 
 ## 1. 如何安装/使用脚本？
 
@@ -14,6 +15,7 @@ https://github.com/dlzmoe/scripts
 
 | 脚本名称                                  | 脚本说明                                                                                    | Greasyfork                                                                                          |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| [nextchat-themes](./nextchat-themes/)     | NextChat 插件，修改 UI 主题                                                                 | [安装](https://greasyfork.org/scripts/513677)                                                       |
 | linuxdo 增强插件                          | linux.do 多功能脚本。                                                                       | [安装](https://greasyfork.org/scripts/501827) / [Github](https://github.com/dlzmoe/linuxdo-scripts) |
 | v2ex 图片灯箱插件                         | v2ex 图片灯箱插件，可以使用滚轮放大缩小。                                                   | [安装](https://greasyfork.org/scripts/454963)                                                       |
 | v2ex AI 总结帖子                          | 自定义 api key 等信息，实现 AI 总结帖子，会保留缓存记录到本地避免大量消耗 token。           | [安装](https://greasyfork.org/scripts/505714)                                                       |

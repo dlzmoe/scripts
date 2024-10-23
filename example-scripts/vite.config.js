@@ -10,10 +10,10 @@ export default defineConfig({
     monkey({
       entry: 'src/main.js',
       userscript: {
-        icon: 'https://framerusercontent.com/images/tCHbBovHGLAJDNKRG1lKfavenFs.png',
-        name: "nextchat-themes",
+        icon: 'https://raw.githubusercontent.com/dlzmoe/UserScript/refs/heads/main/assets/g.png',
+        name: "example-scripts",
         namespace: 'https://github.com/dlzmoe/UserScript',
-        description: "NextChat 插件，修改 UI 主题！",
+        description: "a sample script.",
         version: pkg.version,
         match: ['*://app.nextchat.dev/*'],
       },
