@@ -9,7 +9,7 @@ https://github.com/dlzmoe/UserScript
 
 ## 1. 如何安装/使用脚本？
 
-要使用任何脚本，首先需要浏览器安装 **Tampermonkey** 脚本管理器扩展，比如 [Chrome](https://chromewebstore.google.com/detail/jinjaccalgkegednnccohejagnlnfdag)。
+要使用任何脚本，首先需要浏览器安装 **Tampermonkey** 脚本管理器扩展，比如 [Chrome - 暴力猴](https://chromewebstore.google.com/detail/jinjaccalgkegednnccohejagnlnfdag)。
 
 ## 2. 脚本列表
 
