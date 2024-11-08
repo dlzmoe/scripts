@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lobechat Webdav 同步功能
 // @namespace    https://github.com/dlzmoe/UserScript
-// @version      0.0.3
+// @version      0.0.5
 // @author       dlzmoe
 // @description  给 lobechat 程序添加 webdav 同步的功能。
 // @license      Apache-2.0
@@ -13,13 +13,13 @@
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-(e=>{if(typeof GM_addStyle=="function"){GM_addStyle(e);return}const o=document.createElement("style");o.textContent=e,document.head.append(o)})(" .lobewebdav{position:fixed;left:10px;top:230px;z-index:100}.lobewebdav .lobewebdav-dialog{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:600px;height:400px;overflow-y:scroll;padding:30px;border-radius:20px;background:#fff;box-shadow:1px 5px 10px #0003}.lobewebdav .lobewebdav-dialog .close{position:absolute;right:20px;top:30px;cursor:pointer;transition:all .2s linear}.lobewebdav .lobewebdav-dialog .close:hover{color:#666}.lobewebdav .lobewebdav-dialog h2{margin-bottom:20px}.lobewebdav .lobewebdav-dialog .item{display:flex;align-items:center;margin-top:1em}.lobewebdav .lobewebdav-dialog .item label{width:120px;text-align:right;white-space:nowrap}.lobewebdav .lobewebdav-dialog .item input{flex:1;border-radius:4px;height:28px;border:1px solid #999;transition:all .1s linear;padding:0 10px}.lobewebdav .lobewebdav-dialog .item input:focus{border-color:#666}.lobewebdav .lobewebdav-dialog button{outline:none;border:none;border-radius:5px;background:#333;color:#fff;height:30px;padding:0 15px;transition:all .1s linear;cursor:pointer}.lobewebdav .lobewebdav-dialog button+button{margin-left:10px}.lobewebdav .lobewebdav-dialog button:hover{background:#666} ");
+(e=>{if(typeof GM_addStyle=="function"){GM_addStyle(e);return}const o=document.createElement("style");o.textContent=e,document.head.append(o)})(" .lobewebdav{position:fixed;left:10px;bottom:100px;z-index:100}.lobewebdav .lobewebdav-dialog{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:600px;height:400px;overflow-y:scroll;padding:30px;border-radius:20px;background:#fff;box-shadow:1px 5px 10px #0003;color:#333}.lobewebdav .lobewebdav-dialog .close{position:absolute;right:20px;top:30px;cursor:pointer;transition:all .2s linear}.lobewebdav .lobewebdav-dialog .close:hover{color:#666}.lobewebdav .lobewebdav-dialog h2{margin-bottom:20px}.lobewebdav .lobewebdav-dialog .item{display:flex;align-items:center;margin-top:1em}.lobewebdav .lobewebdav-dialog .item label{width:120px;text-align:right;white-space:nowrap}.lobewebdav .lobewebdav-dialog .item input{flex:1;border-radius:4px;height:28px;border:1px solid #999;transition:all .1s linear;padding:0 10px;background:#fff;color:#333}.lobewebdav .lobewebdav-dialog .item input:focus{border-color:#666}.lobewebdav .lobewebdav-dialog button{outline:none;border:none;border-radius:5px;background:#333;color:#fff;height:30px;padding:0 15px;transition:all .1s linear;cursor:pointer}.lobewebdav .lobewebdav-dialog button+button{margin-left:10px}.lobewebdav .lobewebdav-dialog button:hover{background:#666} ");
 
 (function (vue) {
   'use strict';
 
   const name = "lobechat-webdav";
-  const version = "0.0.3";
+  const version = "0.0.5";
   const author = "dlzmoe";
   const description = "Add webdav synchronization function to lobechat program.";
   const type = "module";
