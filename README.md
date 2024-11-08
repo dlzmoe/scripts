@@ -15,6 +15,7 @@ https://github.com/dlzmoe/UserScript
 
 | 脚本名称                                  | 脚本说明                                                                                    | Greasyfork                                                                                                               |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| lobechat-webdav                           | 给 lobechat 程序添加 webdav 同步的功能。                                                    | [Greasyfork](https://greasyfork.org/scripts/516358)                                                                      |
 | Trucksbook 欧元换算人民币单位             | trucksbook.eu 欧元换算人民币单位插件，安装即可使用生效。                                    | [Greasyfork](https://greasyfork.org/scripts/515007)                                                                      |
 | [nextchat-themes](./nextchat-themes/)     | NextChat 插件，修改 UI 主题                                                                 | [Greasyfork](https://greasyfork.org/scripts/513677)                                                                      |
 | linuxdo 增强插件                          | linux.do 多功能脚本。                                                                       | [Greasyfork](https://greasyfork.org/scripts/501827) / [Github](https://github.com/dlzmoe/linuxdo-scripts)                |
