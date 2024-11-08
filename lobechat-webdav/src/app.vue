@@ -46,9 +46,6 @@
         </svg>
       </div>
       <h2>同步 Lobechat 数据到 WebDav</h2>
-      <div class="item" style="color:#999">
-        仅同步聊天记录，不同步后台 api 设置信息。
-      </div>
       <div class="item">
         <label>WebDav 地址：</label>
         <input type="text" v-model="webdav.baseurl" placeholder="https://xxx.com/dav/" />
@@ -104,7 +101,7 @@ export default {
     // 获取 lobechat 数据生成 json
     getIndexedDB() {
       const dbName = "LOBE_CHAT_DB";
-      const storeNames = ["messages", "sessionGroups", "sessions", "topics"];
+      const storeNames = ["messages", "sessionGroups", "sessions", "topics", "users"];
 
       let request = indexedDB.open(dbName);
 
@@ -115,6 +112,7 @@ export default {
           sessionGroups: [],
           sessions: [],
           topics: [],
+          users: [],
         };
 
         let pendingStores = 0;
@@ -311,7 +309,7 @@ export default {
         // 覆盖云端数据到本地 indexedDB 中
         // 数据库名称和对象存储名称
         const dbName = "LOBE_CHAT_DB";
-        const storeNames = ["messages", "sessionGroups", "sessions", "topics"]; // 不包括 'settings'
+        const storeNames = ["messages", "sessionGroups", "sessions", "topics", "users"]; // 不包括 'settings'
 
         // 打开数据库连接
         let request = indexedDB.open(dbName);

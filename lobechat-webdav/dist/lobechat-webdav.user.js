@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Lobechat Webdav 同步功能
 // @namespace    https://github.com/dlzmoe/UserScript
-// @version      0.0.5
+// @version      0.0.6
 // @author       dlzmoe
 // @description  给 lobechat 程序添加 webdav 同步的功能。
 // @license      Apache-2.0
-// @icon         https://chat-preview.lobehub.com/favicon-32x32.ico
+// @icon         https://chat.oaipro.com/favicon-32x32.ico
 // @match        *://chat.oaipro.com/*
 // @match        *://chat-preview.lobehub.com/*
 // @require      https://unpkg.com/vue@3.4.38/dist/vue.global.prod.js
@@ -19,7 +19,7 @@
   'use strict';
 
   const name = "lobechat-webdav";
-  const version = "0.0.5";
+  const version = "0.0.6";
   const author = "dlzmoe";
   const description = "Add webdav synchronization function to lobechat program.";
   const type = "module";
@@ -86,7 +86,7 @@
       // 获取 lobechat 数据生成 json
       getIndexedDB() {
         const dbName = "LOBE_CHAT_DB";
-        const storeNames = ["messages", "sessionGroups", "sessions", "topics"];
+        const storeNames = ["messages", "sessionGroups", "sessions", "topics", "users"];
         let request = indexedDB.open(dbName);
         request.onsuccess = (event) => {
           const db = event.target.result;
@@ -94,7 +94,8 @@
             messages: [],
             sessionGroups: [],
             sessions: [],
-            topics: []
+            topics: [],
+            users: []
           };
           let pendingStores = 0;
           storeNames.forEach((storeName) => {
@@ -264,7 +265,7 @@
           console.log(importData);
           this.msg = "下载成功，即将同步数据，请勿操作页面！";
           const dbName = "LOBE_CHAT_DB";
-          const storeNames = ["messages", "sessionGroups", "sessions", "topics"];
+          const storeNames = ["messages", "sessionGroups", "sessions", "topics", "users"];
           let request = indexedDB.open(dbName);
           request.onsuccess = function(event) {
             const db = event.target.result;
@@ -380,20 +381,16 @@
     _hoisted_5
   ];
   const _hoisted_7 = /* @__PURE__ */ vue.createElementVNode("h2", null, "同步 Lobechat 数据到 WebDav", -1);
-  const _hoisted_8 = /* @__PURE__ */ vue.createElementVNode("div", {
-    class: "item",
-    style: { "color": "#999" }
-  }, " 仅同步聊天记录，不同步后台 api 设置信息。 ", -1);
-  const _hoisted_9 = { class: "item" };
-  const _hoisted_10 = /* @__PURE__ */ vue.createElementVNode("label", null, "WebDav 地址：", -1);
-  const _hoisted_11 = { class: "item" };
-  const _hoisted_12 = /* @__PURE__ */ vue.createElementVNode("label", null, "WebDav 用户名：", -1);
-  const _hoisted_13 = { class: "item" };
-  const _hoisted_14 = /* @__PURE__ */ vue.createElementVNode("label", null, "WebDav 密码：", -1);
+  const _hoisted_8 = { class: "item" };
+  const _hoisted_9 = /* @__PURE__ */ vue.createElementVNode("label", null, "WebDav 地址：", -1);
+  const _hoisted_10 = { class: "item" };
+  const _hoisted_11 = /* @__PURE__ */ vue.createElementVNode("label", null, "WebDav 用户名：", -1);
+  const _hoisted_12 = { class: "item" };
+  const _hoisted_13 = /* @__PURE__ */ vue.createElementVNode("label", null, "WebDav 密码：", -1);
+  const _hoisted_14 = { class: "item" };
   const _hoisted_15 = { class: "item" };
   const _hoisted_16 = { class: "item" };
-  const _hoisted_17 = { class: "item" };
-  const _hoisted_18 = { class: "msg" };
+  const _hoisted_17 = { class: "msg" };
   function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("div", _hoisted_1, [
       vue.createElementVNode("a", {
@@ -407,9 +404,8 @@
           onClick: _cache[1] || (_cache[1] = ($event) => this.open = false)
         }, _hoisted_6),
         _hoisted_7,
-        _hoisted_8,
-        vue.createElementVNode("div", _hoisted_9, [
-          _hoisted_10,
+        vue.createElementVNode("div", _hoisted_8, [
+          _hoisted_9,
           vue.withDirectives(vue.createElementVNode("input", {
             type: "text",
             "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.webdav.baseurl = $event),
@@ -418,8 +414,8 @@
             [vue.vModelText, $data.webdav.baseurl]
           ])
         ]),
-        vue.createElementVNode("div", _hoisted_11, [
-          _hoisted_12,
+        vue.createElementVNode("div", _hoisted_10, [
+          _hoisted_11,
           vue.withDirectives(vue.createElementVNode("input", {
             type: "text",
             "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $data.webdav.username = $event)
@@ -427,8 +423,8 @@
             [vue.vModelText, $data.webdav.username]
           ])
         ]),
-        vue.createElementVNode("div", _hoisted_13, [
-          _hoisted_14,
+        vue.createElementVNode("div", _hoisted_12, [
+          _hoisted_13,
           vue.withDirectives(vue.createElementVNode("input", {
             type: "password",
             "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.webdav.password = $event)
@@ -436,12 +432,12 @@
             [vue.vModelText, $data.webdav.password]
           ])
         ]),
-        vue.createElementVNode("div", _hoisted_15, [
+        vue.createElementVNode("div", _hoisted_14, [
           vue.createElementVNode("button", {
             onClick: _cache[5] || (_cache[5] = (...args) => $options.savewebdav && $options.savewebdav(...args))
           }, "保存密码")
         ]),
-        vue.createElementVNode("div", _hoisted_16, [
+        vue.createElementVNode("div", _hoisted_15, [
           vue.createElementVNode("button", {
             onClick: _cache[6] || (_cache[6] = (...args) => $options.uploadSampleFile && $options.uploadSampleFile(...args))
           }, "同步到云端"),
@@ -449,8 +445,8 @@
             onClick: _cache[7] || (_cache[7] = (...args) => $options.downloadSampleFile && $options.downloadSampleFile(...args))
           }, "下载到本地")
         ]),
-        vue.createElementVNode("div", _hoisted_17, [
-          vue.createElementVNode("div", _hoisted_18, vue.toDisplayString($data.msg), 1)
+        vue.createElementVNode("div", _hoisted_16, [
+          vue.createElementVNode("div", _hoisted_17, vue.toDisplayString($data.msg), 1)
         ])
       ], 512), [
         [vue.vShow, $data.open]
