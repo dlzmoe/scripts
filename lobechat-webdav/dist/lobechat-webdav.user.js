@@ -112,7 +112,6 @@
                     state,
                     version: 7
                   });
-                  console.log(this.exportData);
                 }
               };
               allRecords.onerror = (event2) => {
@@ -288,10 +287,10 @@
                         console.error(`Error adding item to ${storeName}:`, event2);
                       };
                     });
+                    setTimeout(() => {
+                      this.msg = "同步完成，请手动刷新页面！";
+                    }, 1e3);
                   }
-                  setTimeout(() => {
-                    this.msg = "同步完成，请手动刷新页面！";
-                  }, 1e3);
                 };
                 clearRequest.onerror = function(event2) {
                   console.error(`Error clearing ${storeName} store:`, event2);
