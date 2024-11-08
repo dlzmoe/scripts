@@ -11,7 +11,7 @@ export default defineConfig({
       entry: 'src/main.js',
       userscript: {
         icon: 'https://chat-preview.lobehub.com/favicon-32x32.ico',
-        name: "lobechat-webdav",
+        name: "Lobechat Webdav 同步功能",
         namespace: 'https://github.com/dlzmoe/UserScript',
         description: "给 lobechat 程序添加 webdav 同步的功能。",
         version: pkg.version,

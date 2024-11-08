@@ -46,6 +46,9 @@
         </svg>
       </div>
       <h2>同步 Lobechat 数据到 WebDav</h2>
+      <div class="item" style="color:#999">
+        仅同步聊天记录，不同步后台 api 设置信息。
+      </div>
       <div class="item">
         <label>WebDav 地址：</label>
         <input type="text" v-model="webdav.baseurl" placeholder="https://xxx.com/dav/" />
@@ -96,6 +99,7 @@ export default {
     // 保存密码
     savewebdav() {
       localStorage.setItem("lobechat-webdav", JSON.stringify(this.webdav));
+      this.msg = "WebDav 密码已保存！";
     },
     // 获取 lobechat 数据生成 json
     getIndexedDB() {
@@ -343,9 +347,6 @@ export default {
                       console.error(`Error adding item to ${storeName}:`, event);
                     };
                   });
-                  setTimeout(() => {
-                    this.msg = "同步完成，请手动刷新页面！";
-                  }, 1000);
                 }
               };
 
@@ -357,6 +358,10 @@ export default {
             }
           });
         };
+
+        setTimeout(() => {
+          this.msg = "同步完成，请手动刷新页面！";
+        }, 3000);
 
         request.onerror = function (event) {
           console.error("Error opening database:", event);
