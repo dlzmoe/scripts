@@ -1,4 +1,4 @@
-<p align="center"><img src="./assets/github-header-image.png"></p>
+<h2 align="center">UserScript</h2>
 
 <p align="center">自用的 GM 油猴脚本。一部分脚本已经发布到 greasyfork.org，一部分在本地未发布。</p>
 
