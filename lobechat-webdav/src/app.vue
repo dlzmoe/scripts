@@ -358,8 +358,9 @@ export default {
         };
 
         setTimeout(() => {
-          this.msg = "同步完成，请手动刷新页面！";
-        }, 3000);
+          this.msg = "同步完成，请刷新页面！";
+          location.reload();
+        }, 2000);
 
         request.onerror = function (event) {
           console.error("Error opening database:", event);

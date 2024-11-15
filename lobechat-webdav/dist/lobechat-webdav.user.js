@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lobechat Webdav 同步功能
 // @namespace    https://github.com/dlzmoe/UserScript
-// @version      0.0.6
+// @version      0.0.7
 // @author       dlzmoe
 // @description  给 lobechat 程序添加 webdav 同步的功能。
 // @license      Apache-2.0
@@ -19,7 +19,7 @@
   'use strict';
 
   const name = "lobechat-webdav";
-  const version = "0.0.6";
+  const version = "0.0.7";
   const author = "dlzmoe";
   const description = "Add webdav synchronization function to lobechat program.";
   const type = "module";
@@ -300,8 +300,9 @@
             });
           };
           setTimeout(() => {
-            this.msg = "同步完成，请手动刷新页面！";
-          }, 3e3);
+            this.msg = "同步完成，请刷新页面！";
+            location.reload();
+          }, 2e3);
           request.onerror = function(event) {
             console.error("Error opening database:", event);
           };
