@@ -119,6 +119,7 @@ const zh_Hans = [
 	['Your site is always accessible at a netlify.app subdomain based on the site name. Custom domains allow visitors to access your site at your own domains.', '您的网站始终可以根据网站名称通过 netlify.app 子域进行访问。自定义域允许访问者通过您自己的域访问您的网站。'],
 	['Add domain alias', '新增自定义域名'],
   ['Visual editor dashboard', '可视化编辑器仪表板'],
+	['Extensions', '扩展'],
 ];
 
 class ReplaceText {
