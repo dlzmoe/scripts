@@ -1,6 +1,6 @@
 {
   "name": "lobechat-webdav",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "dlzmoe",
   "description": "Add webdav synchronization function to lobechat program.",
   "type": "module",
