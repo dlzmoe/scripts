@@ -234,10 +234,17 @@ export default {
 
         try {
           const uploadResponse = await this.uploadFile(uploadUrl, data);
-          this.msg = "同步到云端成功！";
-        } catch (error) {
-          console.error("Upload failed:", error);
-          this.msg = "同步失败！";
+            this.msg = "同步到云端成功！3秒后清空";
+            setTimeout(() => {
+              this.msg = "";
+            }, 3000); // 3秒后清空消息
+          } catch (error) {
+            console.error("Upload failed:", error);
+            this.msg = "同步失败！";
+            // 同样处理失败消息
+            setTimeout(() => {
+              this.msg = "";
+            }, 3000); // 3秒后清空消息
         }
       } catch (error) {
         console.error(error);
