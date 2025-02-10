@@ -8,6 +8,7 @@
 // @icon         https://chat.oaipro.com/favicon-32x32.ico
 // @match        *://chat.oaipro.com/*
 // @match        *://chat-preview.lobehub.com/*
+// @match        *://lobechat.zishu.me/*
 // @require      https://unpkg.com/vue@3.4.38/dist/vue.global.prod.js
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest

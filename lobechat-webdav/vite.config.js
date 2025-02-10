@@ -17,7 +17,8 @@ export default defineConfig({
         version: pkg.version,
         match: [
           '*://chat.oaipro.com/*',
-          '*://chat-preview.lobehub.com/*'
+          '*://chat-preview.lobehub.com/*',
+          '*://lobechat.zishu.me/*',
         ],
       },
       build: {
